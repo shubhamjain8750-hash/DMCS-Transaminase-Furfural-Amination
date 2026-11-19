@@ -14,9 +14,9 @@ Input:
 Required columns:
     Enzyme
     Directory
+    CatalyticDistanceFile
     RMSF
     MMGBSA
-    CatalyticDistanceFile
 
 Per-system files:
     Catalytic-residue–PLP distance file
@@ -170,12 +170,24 @@ def main():
             f"Missing input columns: {sorted(missing)}"
         )
 
-    # Validate identifiers and paths.
-    for column in ("Enzyme", "Directory", "CatalyticDistanceFile"):
+    # Validate missing values before converting to strings.
+    for column in (
+        "Enzyme",
+        "Directory",
+        "CatalyticDistanceFile"
+    ):
+
+        if df[column].isna().any():
+            raise ValueError(
+                f"Missing values in {column}"
+            )
+
         df[column] = df[column].astype(str).str.strip()
 
-    if df[["Enzyme", "Directory", "CatalyticDistanceFile"]].isna().any().any():
-        raise ValueError("Missing enzyme, directory, or distance filename.")
+        if (df[column] == "").any():
+            raise ValueError(
+                f"Empty values in {column}"
+            )
 
     if df["Enzyme"].duplicated().any():
         raise ValueError(
@@ -190,7 +202,10 @@ def main():
 
     # Validate previously calculated descriptors.
     for column in ("RMSF", "MMGBSA"):
-        df[column] = pd.to_numeric(df[column], errors="raise")
+        df[column] = pd.to_numeric(
+            df[column],
+            errors="raise"
+        )
 
     if not np.isfinite(
         df[["RMSF", "MMGBSA"]].to_numpy(dtype=float)
@@ -200,7 +215,9 @@ def main():
         )
 
     if (df["RMSF"] < 0).any():
-        raise ValueError("RMSF cannot be negative.")
+        raise ValueError(
+            "RMSF cannot be negative."
+        )
 
     results = []
 
@@ -209,14 +226,17 @@ def main():
 
         enzyme = record["Enzyme"]
 
-        folder = Path(record["Directory"]).expanduser()
+        folder = Path(
+            record["Directory"]
+        ).expanduser()
 
         if not folder.is_absolute():
             folder = Path.cwd() / folder
 
         if not folder.is_dir():
             raise FileNotFoundError(
-                f"Analysis directory not found for {enzyme}: {folder}"
+                f"Analysis directory not found for "
+                f"{enzyme}: {folder}"
             )
 
         catalytic_file = (
@@ -225,10 +245,15 @@ def main():
 
         unl_file = folder / "plp_unl.dat"
         uni_file = folder / "plp_uni.dat"
-        cluster_file = folder / "dmcs_cluster_summary.dat"
+        cluster_file = (
+            folder / "dmcs_cluster_summary.dat"
+        )
 
         # Raw distance descriptors.
-        catalytic_distance = mean_second_column(catalytic_file)
+        catalytic_distance = mean_second_column(
+            catalytic_file
+        )
+
         plp_unl = mean_second_column(unl_file)
         plp_uni = mean_second_column(uni_file)
 
@@ -238,6 +263,7 @@ def main():
         )
 
         results.append({
+
             "Enzyme": enzyme,
 
             # Retained field name for compatibility with S2.
@@ -248,6 +274,7 @@ def main():
             "RMSF": float(record["RMSF"]),
             "ClusterFraction": cluster_fraction,
             "MMGBSA": float(record["MMGBSA"])
+
         })
 
         print(
@@ -255,7 +282,7 @@ def main():
             f"largest cluster = {cluster_frames} frames"
         )
 
-    # Compile and validate final raw descriptor dataset.
+    # Compile final raw descriptor dataset.
     output = pd.DataFrame(results)
 
     numeric_columns = [
@@ -279,16 +306,34 @@ def main():
             "Cluster fractions must be greater than zero."
         )
 
+    # Preserve the exact S2 input schema.
+    output = output[
+        [
+            "Enzyme",
+            "Lys_PLP",
+            "PLP_UNL",
+            "PLP_UNI",
+            "RMSF",
+            "ClusterFraction",
+            "MMGBSA"
+        ]
+    ]
+
     output.to_csv(
         OUTPUT,
         index=False,
         float_format="%.6f"
     )
 
-    print("\nS1 descriptor compilation completed successfully.")
+    print(
+        "\nS1 descriptor compilation completed successfully."
+    )
+
     print(f"Enzyme systems processed: {len(output)}")
     print(f"Output generated: {OUTPUT}")
 
 
 if __name__ == "__main__":
     main()
+
+
