@@ -16,6 +16,15 @@ final ranking, and scripts for the 15-system DMCS analysis.
    generates `DMCS_STANDARDIZED.csv`.
 3. `S3_DMCS_ranking.py` — ranking and summary generation;
    generates `DMCS_Final_Ranking.csv`.
+   
+## Descriptor Extraction
+
+Raw descriptors were extracted from equilibrated
+500 ns production trajectories using CPPTRAJ-based
+analysis workflows described in the Supporting Information.
+
+The extracted descriptors were compiled into
+DMCS_RESULTS.csv for subsequent normalization.
 
 ## DMCS weights
 - Catalytic readiness (Dcat): 0.40
