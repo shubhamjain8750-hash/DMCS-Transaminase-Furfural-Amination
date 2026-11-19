@@ -3,9 +3,11 @@
 
 import numpy as np
 import pandas as pd
+from pathlib import Path
 
-INPUT_FILE = "DMCS_STANDARDIZED.csv"
-OUTPUT_FILE = "DMCS_Final_Ranking.csv"
+HERE = Path(__file__).resolve().parent
+INPUT_FILE = HERE / "DMCS_STANDARDIZED.csv"
+OUTPUT_FILE = HERE / "DMCS_Final_Ranking.csv"
 EXCLUDED_SYSTEMS = {"A0A1V0DD42", "A0A2L2XFE1"}
 EXPECTED_ENZYMES = {
     "ATA117-Rd11", "A0A2G0CFH8", "Lys-W-TA", "AspC", "AptA",
