@@ -1,17 +1,16 @@
-
-Enzyme,Directory,CatalyticDistanceFile,RMSF,MMGBSA
-AB-R-ATA,AB-R-ATA,lys_plp.dat,13.5967,-4.3682
-H-188,H-188-500ns,his_plp.dat,11.787,-2.359
-F-188,F-188-500ns,phe_plp.dat,14.0009,-2.9229
-G-188,G-188-500ns,gly_plp.dat,15.5716,-4.4999
-S-188,S-188-500ns,ser_plp.dat,15.925,-1.423
-CV-TAm,CV-tam,lys_plp.dat,21.046,-2.903
-W-188,W-188-500ns,trp_plp.dat,21.8127,-3.9323
-A0A1B728H4,A0A1B728H4-500ns,lys_plp.dat,16.785,-2.552
-A0A1Z5HPJ6,A0A1Z5HPJ6-500ns,lys_plp.dat,17.776,-2.829
-ATA117-Rd11,ATA-117-rd11_rerun_500ns,lys_plp.dat,1.477,-12.479
-A0A2G0CFH8,A0A2G0CFH8-500ns,lys_plp.dat,1.085,-10.71
-AptA,AptA500ns,lys_plp.dat,1.818,-4.91
-AspC,AspC-500ns,lys_plp.dat,1.561,-1.636
-S-omega-TA,S-omega-TA-500ns,lys_plp.dat,0.876,-3.68
-Lys-W-TA,Lys-W-TA-500ns,lys_plp.dat,0.7051,-6.0546
+Enzyme,Directory,CatalyticDistanceFile,RMSF,MMGBSA,RMSF_Status,MMGBSA_Status,Notes
+ATA117-Rd11,ATA-117-rd11_rerun_500ns,lys_plp.dat,1.476733,-12.4786,PROVISIONAL_REQUIRES_RAW_FILE_RECHECK,GB_DELTA_TOTAL_FROM_SELECTED_RERUN,"Mean of six reported active-site residues; preserve exact selection and raw output"
+A0A2G0CFH8,A0A2G0CFH8-500ns,lys_plp.dat,1.0853167,-10.71,PROVISIONAL_REQUIRES_RAW_FILE_RECHECK,UNVERIFIED_IN_CURRENT_CONTEXT,"18-residue RMSF mean previously reported; verify raw GB output"
+Lys-W-TA,Lys-W-TA-500ns,lys_plp.dat,0.7051,-6.0546,INVALID_SELECTION_REVIEW_REQUIRED,UNVERIFIED_IN_CURRENT_CONTEXT,"Only one RMSF residue reported; active-site mask needs review"
+AspC,AspC-500ns,lys_plp.dat,1.5606727,-1.636,PROVISIONAL_REQUIRES_RAW_FILE_RECHECK,UNVERIFIED_IN_CURRENT_CONTEXT,"Verify raw RMSF output and selection; verify GB output"
+AptA,AptA500ns,lys_plp.dat,1.8177636,-4.91,PROVISIONAL_REQUIRES_RAW_FILE_RECHECK,UNVERIFIED_IN_CURRENT_CONTEXT,"Verify raw RMSF output and selection; verify GB output"
+H-188,H-188-500ns,his_plp.dat,11.787,-2.359,UNVERIFIED_HISTORICAL_VALUE,GB_DELTA_TOTAL_REPORTED,"Historical hard-coded RMSF value; locate matching raw cpptraj output"
+G-188,G-188-500ns,gly_plp.dat,15.5716,-4.4999,UNVERIFIED_HISTORICAL_VALUE,GB_DELTA_TOTAL_REPORTED,"Historical hard-coded RMSF value; locate matching raw cpptraj output"
+F-188,F-188-500ns,phe_plp.dat,14.0009,-2.9229,UNVERIFIED_HISTORICAL_VALUE,GB_DELTA_TOTAL_REPORTED,"Historical hard-coded RMSF value; locate matching raw cpptraj output"
+AB-R-ATA,AB-R-ATA,lys_plp.dat,13.5967,-4.3682,UNVERIFIED_HISTORICAL_VALUE,UNVERIFIED_IN_CURRENT_CONTEXT,"Historical descriptor values; verify raw RMSF and GB output"
+A0A1B728H4,A0A1B728H4-500ns,lys_plp.dat,16.785,-2.552,UNVERIFIED_HISTORICAL_VALUE,UNVERIFIED_IN_CURRENT_CONTEXT,"Historical descriptor values; verify raw RMSF and GB output"
+A0A1Z5HPJ6,A0A1Z5HPJ6-500ns,lys_plp.dat,17.776,-2.829,UNVERIFIED_HISTORICAL_VALUE,UNVERIFIED_IN_CURRENT_CONTEXT,"Historical descriptor values; verify raw RMSF and GB output"
+S-omega-TA,S-omega-TA-500ns,lys_plp.dat,0.8765,-3.68,INVALID_OR_INCOMPLETE_SELECTION_REVIEW_REQUIRED,UNVERIFIED_IN_CURRENT_CONTEXT,"Prior selection referenced residues 460-462 despite reported protein length 459; verify topology mapping"
+S-188,S-188-500ns,ser_plp.dat,15.925,-1.4231,UNVERIFIED_HISTORICAL_VALUE,GB_DELTA_TOTAL_REPORTED,"Historical hard-coded RMSF value; locate matching raw cpptraj output"
+CV-TAm,CV-tam,lys_plp.dat,21.046,-2.903,UNVERIFIED_HISTORICAL_VALUE,UNVERIFIED_IN_CURRENT_CONTEXT,"Historical descriptor values; verify raw RMSF and GB output"
+W-188,W-188-500ns,trp_plp.dat,21.8127,-3.9323,UNVERIFIED_HISTORICAL_VALUE,GB_DELTA_TOTAL_REPORTED,"Historical hard-coded RMSF value; locate matching raw cpptraj output"
