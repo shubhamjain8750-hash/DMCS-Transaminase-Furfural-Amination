@@ -1,21 +1,10 @@
+# DMCS Supporting Information datasets
 
-# 01 - Enzyme Screening
+This folder contains machine-readable CSV versions of Tables S1-S4 extracted from the uploaded Supporting Information (19 pages).
 
-This directory contains the datasets associated with the initial computational screening of PLP-dependent enzymes for furfural amination.
+- Table_S1_Initial_Enzyme_Screening.csv: 22 initially screened enzymes.
+- Table_S2_Homolog_Screening.csv: 10 homologous transaminases, sequence similarity and sequential docking scores.
+- Table_S3_Benchmark_Enzymes.csv: AB-R-ATA and CV-TAm benchmark docking results.
+- Table_S4_Lys188_Variants.csv: 10 Lys188 substitution variants and sequential docking scores.
 
-## Datasets
-
-- Initial screening of 22 PLP-dependent enzymes.
-- Sequence similarity and screening of 10 homologous transaminases.
-- Benchmark enzyme screening (AB-R-ATA and CV-TAm).
-- Computational screening of Lys188 substitution variants.
-
-## Data Format
-
-Screening datasets will be provided in machine-readable CSV format, including enzyme identifiers, UniProt accession numbers, sequence similarity information where applicable, and sequential docking scores.
-
-## Associated Manuscript Sections
-
-- Section 2.1: Selection of Enzymes
-- Section 2.3: Docking Protocol
-- Supporting Information: Tables S1-S4
+Values and identifiers were transcribed from the Supporting Information tables. Column names were converted to machine-readable labels; numerical values were retained. Please cite the associated manuscript/Supporting Information when reusing these data.
