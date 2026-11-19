@@ -5,46 +5,36 @@
 
 This directory contains the computational implementation of the Dynamic Mechanistic Conformation Scoring (DMCS) framework developed for the prioritization of PLP-dependent transaminases.
 
-## DMCS Descriptors
+# DMCS Analysis
 
-The framework integrates four trajectory-derived descriptors:
+This folder contains the input descriptor table, normalized DMCS output,
+final ranking, and scripts for the 15-system DMCS analysis.
 
-1. Catalytic Readiness (Dcat)
-2. Active-Site Rigidity (Drig)
-3. Conformational Persistence (Dconf)
-4. Energetic Stabilization (Dene)
+## Workflow
+1. `DMCS_RESULTS.csv` — descriptor input used by S2.
+2. `S2_DMCS_normalization.py` — descriptor normalization and DMCS calculation;
+   generates `DMCS_STANDARDIZED.csv`.
+3. `S3_DMCS_ranking.py` — ranking and summary generation;
+   generates `DMCS_Final_Ranking.csv`.
 
-## Computational Workflows
+## DMCS weights
+- Catalytic readiness (Dcat): 0.40
+- Active-site rigidity (Drig): 0.25
+- Conformational persistence (Dconf): 0.15
+- Energetic stabilization (Dene): 0.20
 
-### Workflow 1: Descriptor Extraction
-
-Extraction of trajectory-derived catalytic distances, active-site RMSF, conformational cluster occupancy and MM/GBSA energetic contributions.
-
-### Workflow 2: Descriptor Normalization and Scoring
-
-Normalization of individual descriptors and calculation of the composite DMCS score using the predefined weighting scheme:
-
-DMCS = 0.40(Dcat) + 0.25(Drig) + 0.15(Dconf) + 0.20(Dene)
-
-### Workflow 3: Ranking and Visualization
-
-Generation of normalized descriptor tables, comparative enzyme rankings and datasets for visualization.
-
-## Expected Files
-
-- S1_descriptor_extraction.py
-- S2_DMCS_normalization.py
-- S3_DMCS_ranking.py
-- DMCS_raw_descriptors.csv
-- DMCS_standardized.csv
-- DMCS_final_ranking.csv
-- active_site_residues.csv
+Catalytic readiness subweights:
+- Lys_PLP: 0.50
+- PLP_UNL: 0.25
+- PLP_UNI: 0.25
 
 ## Reproducibility
+Run from this directory:
+```bash
+python S2_DMCS_normalization.py
+python S3_DMCS_ranking.py
+```
 
-The scripts and machine-readable datasets will provide the computational implementation and data required to reproduce the DMCS calculations and comparative enzyme prioritization.
-
-## Associated Manuscript Sections
-
-- Section 2.6: Dynamic Mechanistic Conformation Scoring
-- Supporting Information: Methods 1-3 and Workflows 1-3
+The scripts validate that exactly 15 unique systems remain after exclusions.
+This is a descriptor-normalization and ranking workflow, not a predictive
+machine-learning model training procedure.
