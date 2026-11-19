@@ -3,10 +3,6 @@
 This folder contains the input descriptor table, normalized DMCS output,
 final ranking, and scripts for the 15-system DMCS analysis.
 
-## Analysis set
-The analysis includes 15 enzyme systems. `A0A1V0DD42` and `A0A2L2XFE1`
-are excluded before descriptor normalization.
-
 ## Workflow
 1. `DMCS_RESULTS.csv` — descriptor input used by S2.
 2. `S2_DMCS_normalization.py` — descriptor normalization and DMCS calculation;
