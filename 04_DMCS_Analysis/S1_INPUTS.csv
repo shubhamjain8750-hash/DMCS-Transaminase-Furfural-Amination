@@ -1,1 +1,5 @@
-Enzyme,Directory,RMSF,MMGBSA\n
+Enzyme,Directory,RMSF,MMGBSA
+Enzyme_1,/path/to/Enzyme_1,value,value
+Enzyme_2,/path/to/Enzyme_2,value,value
+...
+Enzyme_15,/path/to/Enzyme_15,value,value
