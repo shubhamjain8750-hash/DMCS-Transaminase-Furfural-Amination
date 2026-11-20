@@ -1,25 +1,14 @@
 # Post-MD collection — quality-control record
 
-## First-pass collection
+## First-pass collection and issue
 
-- Systems scanned: 15 of 15
-- DAT files collected: 690
-- Numeric CSV conversions: 585
-- Original-copy checksum verification: 690 of 690 passed
-- Missing copied DAT files: 0
-- SHA256 mismatches: 0
-- Duplicate SHA256 groups: 0
-- Files with irregular/skipped numeric lines: 0
+The first-pass classifier collected 690 DAT files across 15 systems and successfully verified their copies by SHA256. However, 45 `FINAL_RESULTS_*_MMPBSA.dat` energy-summary reports were incorrectly assigned to the SASA category. MMPBSA/MMGBSA summary reports are not SASA time-series outputs; the first-pass collection was rejected for publication.
 
-## Classification issue identified
+The corrected collector explicitly excludes MMPBSA/MMGBSA reports before category assignment.
 
-The first-pass classifier included 45 files named `FINAL_RESULTS_UNI_MMPBSA.dat`, `FINAL_RESULTS_UNL_MMPBSA.dat` and `FINAL_RESULTS_UNP_MMPBSA.dat` under the SASA category. These are MMPBSA energy summaries, not solvent-accessible surface area time-series outputs. The first-pass collection must not be used as the final post-MD dataset.
+## Corrected collection inventory
 
-A corrected collector has been prepared to exclude any MMPBSA/MMGBSA report before category assignment.
-
-## Expected corrected inventory
-
-| Category | Expected DAT files |
+| Category | DAT files |
 |---|---:|
 | RMSD | 165 |
 | Rg | 150 |
@@ -27,17 +16,34 @@ A corrected collector has been prepared to exclude any MMPBSA/MMGBSA report befo
 | Hydrogen bonds | 180 |
 | **Total** | **645** |
 
-Expected numeric CSV exports: 585. Sixty hydrogen-bond average files were not tabular numeric series in the first-pass conversion and should remain as source DAT files without a CSV export.
+Numeric CSV conversions: 585. Sixty DAT outputs were not suitable for numeric-table CSV conversion and were retained as original DAT files.
 
-## Release gate
+## Final audit results
 
-This quality-control record documents the first-pass audit, not a completed corrected collection. Before release:
+The corrected collection was scanned across all 15 specified enzyme directories. The final audit returned:
 
-1. Run the corrected collector across the same 15 source directories.
-2. Confirm all 645 DAT files have matching source SHA256 values.
-3. Confirm the inventory counts and review any deviations from the expected counts above.
-4. Confirm no MMPBSA/MMGBSA summaries appear in the SASA category.
-5. Confirm the generated CSV conversions and manifest paths resolve.
-6. Only then publish the corrected data folder and change the repository status to completed.
+| Check | Result |
+|---|---:|
+| Systems found | 15/15 |
+| DAT files collected | 645 |
+| Source/copy SHA256 matches | 645/645 |
+| Missing DAT copies | 0 |
+| SHA256 mismatches | 0 |
+| Duplicate checksum groups | 0 |
+| Files with irregular/skipped numeric rows | 0 |
+| MMPBSA/MMGBSA reports included | 0 |
+| CSV conversions generated | 585 |
+| Missing converted CSV files | 0 |
+| Overall collection audit | **PASS** |
 
-No experimental HPLC/chromatogram data or supplementary figures are part of this public repository collection.
+The copied DAT files were byte-for-byte verified against their source files using SHA256. No missing files, checksum mismatches, duplicate-content groups, irregular numeric rows or energy-summary reports were reported.
+
+## Scope and limitations
+
+This audit establishes collection integrity, source-copy identity and exclusion of the known MMPBSA/MMGBSA classification error. It does not independently validate that atom selections, reference structures, surface definitions, donor/acceptor selections, hydrogen-bond geometric cutoffs, sampling intervals and equilibration windows were identical across all systems. These methodological conditions must be confirmed before interpreting the files as directly comparable quantitative measurements.
+
+No experimental HPLC/chromatogram data or supplementary figures are included in this public repository dataset.
+
+## Release status
+
+The corrected data collection passed its computational-server audit. The generated data files still need to be transferred into this repository and committed. The audit should be retained alongside the final manifest and per-system inventory.
