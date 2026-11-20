@@ -1,4 +1,3 @@
-
 # Dynamic Mechanistic Conformation Scoring (DMCS)
 
 ## Project Overview
@@ -7,67 +6,60 @@ This repository accompanies the research study:
 
 **Dynamic Mechanistic Conformation Scoring-Guided Identification and Experimental Validation of a Transaminase for Biomass-Derived Furfural Amination**
 
-This study introduces Dynamic Mechanistic Conformation Scoring (DMCS), a molecular dynamics-based computational framework for the systematic prioritization of PLP-dependent transaminases for the biocatalytic conversion of biomass-derived furfural into furfurylamine.
+The study introduces Dynamic Mechanistic Conformation Scoring (DMCS), a molecular-dynamics-based descriptor framework for systematic prioritization of PLP-dependent transaminases for the biocatalytic conversion of biomass-derived furfural into furfurylamine.
 
 ## DMCS Framework
 
-The DMCS framework integrates four trajectory-derived descriptors:
+The DMCS framework integrates four descriptor components:
 
-1. Catalytic Readiness (Dcat)
-2. Active-Site Rigidity (Drig)
-3. Conformational Persistence (Dconf)
-4. Energetic Stabilization (Dene)
+1. Catalytic readiness (Dcat)
+2. Active-site rigidity (Drig)
+3. Conformational persistence (Dconf)
+4. Energetic stabilization (Dene)
 
-The composite DMCS score is calculated using:
+The composite score is:
 
-DMCS = 0.40(Dcat) + 0.25(Drig) + 0.15(Dconf) + 0.20(Dene)
+`DMCS = 0.40(Dcat) + 0.25(Drig) + 0.15(Dconf) + 0.20(Dene)`
 
-## Research Objectives
-
-- Computational screening of PLP-dependent enzymes.
-- Sequential molecular docking of PLP, furfural and isopropylamine.
-- Molecular dynamics-based assessment of enzyme systems.
-- Development and implementation of the DMCS framework.
-- Comparative evaluation of enzyme homologs and catalytic-site variants.
-- Experimental evaluation of ATA117-Rd11 for furfural amination.
+The catalytic-readiness component uses catalytic-residue–PLP, PLP–furfural and PLP–isopropylamine distance descriptors with subweights of 0.50, 0.25 and 0.25, respectively.
 
 ## Repository Contents
 
-This repository is being organized to provide the computational scripts, machine-readable datasets, simulation preparation files, processed results and experimental data supporting the study.
-
-The repository will include:
-
 - Enzyme screening datasets.
-- Molecular docking inputs and results.
-- Molecular dynamics preparation files and parameters.
-- DMCS descriptor extraction and scoring scripts.
-- Processed computational datasets.
-- Experimental source data.
-- Software versions and reproducibility documentation.
+- Sequential molecular-docking methodology and supporting data.
+- Molecular-dynamics and MM/GBSA input parameters.
+- System-specific DMCS distance and clustering input files.
+- Machine-readable raw descriptor tables and residue-wise RMSF data.
+- Descriptor extraction, normalization and ranking scripts.
+- Processed computational datasets and reproducibility documentation.
+
+The 15-system DMCS analysis and its supporting inputs are documented in `04_DMCS_Analysis/`.
 
 ## Computational Software
 
-The computational workflow uses:
-
-- AMBER
+- AMBER24
 - CPPTRAJ
 - AutoDock Vina
-- Python
-- Molecular visualization and structural analysis tools
-
-Exact software versions and computational dependencies will be documented in the repository.
+- Python (NumPy and pandas)
+- PyMOL and other molecular-visualization tools
 
 ## Reproducibility
 
-The repository is intended to provide the scripts, input information and machine-readable datasets necessary to reproduce the essential computational analyses and DMCS-based enzyme prioritization described in the associated study.
+The repository provides the S1–S3 analysis scripts, machine-readable descriptor data, system-specific analysis inputs, and source files used to inspect distance, clustering, RMSF and MM/GBSA descriptors. Molecular-dynamics trajectory files are not included.
 
-Molecular dynamics trajectories are not included.
+The current composite ranking is documented as provisional until the system-specific active-site RMSF mapping is complete and consistently verified. See `04_DMCS_Analysis/DMCS_DATA_PROVENANCE_AUDIT.md`.
+
+## Data and Software Availability
+
+The computational scripts, machine-readable descriptor datasets, system-specific DMCS analysis inputs and supporting reproducibility documentation are publicly available in this GitHub repository:
+
+https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination
+
+The Supporting Information provides the detailed computational methodology and supplementary results. Molecular-dynamics trajectories are not included.
 
 ## Citation
 
-Please cite the associated research article when using this repository.
-
-Full publication details and DOI will be added following publication.
+Please cite the associated research article when using this repository. Publication details and DOI will be added following publication.
 
 ## Contact
 
