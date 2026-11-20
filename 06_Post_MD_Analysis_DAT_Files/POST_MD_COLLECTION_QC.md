@@ -46,4 +46,4 @@ No experimental HPLC/chromatogram data or supplementary figures are included in 
 
 ## Release status
 
-The corrected data collection passed its computational-server audit. The generated data files still need to be transferred into this repository and committed. The audit should be retained alongside the final manifest and per-system inventory.
+The corrected data collection, its DAT files and CSV exports, the per-system inventory, the manifest and this QC record are committed to the `main` branch in commit [945ba04](https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination/commit/945ba04b48d8dca2afc46b4604a927e625d8776e). Representative original DAT and CSV files were subsequently fetched successfully from that commit.
