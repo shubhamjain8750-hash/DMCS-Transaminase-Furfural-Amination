@@ -68,3 +68,25 @@ The common protein Cα RMSF values are taken from `rmsf_protein_calpha.dat` in e
 ## Current canonical DMCS result
 
 Using the 5.0 Å structure-defined catalytic pocket and the locked component weights, ATA117-Rd11 ranks first with DMCS = **0.915409**. The current ranking and 4.0/5.0/6.0 Å sensitivity results are included in the machine-readable outputs. The sensitivity analysis is documented in `DMCS_RMSF_METHOD.md`.
+
+## Canonical 5.0 Å DMCS ranking
+
+| Rank | Enzyme | DMCS |
+|---:|---|---:|
+| 1 | ATA117-Rd11 | 0.915409 |
+| 2 | A0A2G0CFH8 | 0.822636 |
+| 3 | G-188 | 0.568524 |
+| 4 | AspC | 0.551479 |
+| 5 | F-188 | 0.536944 |
+| 6 | Lys-W-TA | 0.531666 |
+| 7 | A0A1B728H4 | 0.526610 |
+| 8 | H-188 | 0.526297 |
+| 9 | AptA | 0.463306 |
+| 10 | A0A1Z5HPJ6 | 0.455464 |
+| 11 | S-188 | 0.454378 |
+| 12 | AB-R-ATA | 0.449235 |
+| 13 | CV-TAm | 0.288440 |
+| 14 | W-188 | 0.216602 |
+| 15 | S-omega-TA | 0.108260 |
+
+These values are reproduced from the 5.0 Å structure-derived active-site RMSF descriptor and the locked descriptor weights. The 4.0/5.0/6.0 Å sensitivity data are provided in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
