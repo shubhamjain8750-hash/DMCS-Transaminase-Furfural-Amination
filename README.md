@@ -45,7 +45,7 @@ The 15-system DMCS analysis and its supporting inputs are documented in `04_DMCS
 
 ## Reproducibility
 
-The repository provides the S1–S3 analysis scripts, machine-readable descriptor data, system-specific analysis inputs, and source files used to inspect distance, clustering, RMSF and MM/GBSA descriptors. Molecular-dynamics trajectory files are not included.
+The repository provides the S1–S3 analysis scripts, machine-readable descriptor data, the per-enzyme data directory (`04_DMCS_Analysis/15_Enzyme_Analysis_Data/`), system-specific analysis inputs, and the source tables used to inspect distance, clustering, RMSF and MM/GBSA descriptors. Molecular-dynamics trajectory files are not included.
 
 The current composite ranking is documented as provisional until the system-specific active-site RMSF mapping is complete and consistently verified. See `04_DMCS_Analysis/DMCS_DATA_PROVENANCE_AUDIT.md`.
 
