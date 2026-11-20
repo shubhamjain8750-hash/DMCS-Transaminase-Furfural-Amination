@@ -1,98 +1,79 @@
-# DMCS 15-System Data Provenance and Validation
+# DMCS 15-system data provenance and validation report
 
 ## Scope
 
-This audit documents the 15-system comparison and the raw files collected from the selected 500 ns analysis folders. ATA117-Rd11 remains the lead system prioritized for experimental assessment.
+This report documents the source files and quality-control procedures for the 15-system comparative DMCS analysis. ATA117-Rd11 remains the lead system selected for experimental follow-up.
 
-The audit distinguishes direct extraction from the uploaded files from historical inputs that still require a reproducible active-site residue mapping.
+## Direct inspection of RMSF files
 
-## Locked scoring definition
+The folders were inspected using a broad RMSF filename inventory rather than assuming that all systems used a single name.
 
-Outer component weights:
-- Dcat = 0.40
-- Drig = 0.25
-- Dconf = 0.15
-- Dene = 0.20
+- All 15 systems contain `cpptraj.in`.
+- All 15 systems contain `rmsf_protein_calpha.dat`.
+- All 15 systems contain `rmsf_complex_all_byres.dat`.
+- Nine systems additionally contain `rmsf_byres_clean.dat`.
+- Six systems contain a separately named `active_site_rmsf.dat` and matching `active_site_rmsf.in`; four selections are multi-residue, while two are single-residue.
+- The five Lys188 substitution folders contain residue-wise RMSF outputs and first-frame inspection structures/inputs (`check_*.in`, `check_*.pdb`).
 
-Catalytic-readiness subweights:
-- Catalytic-residue–PLP = 0.50
-- PLP–furfural = 0.25
-- PLP–isopropylamine = 0.25
+The earlier assumption that variant folders lacked RMSF data was incorrect; the files were stored under different names. Those supplementary calculations are retained for traceability. The cross-system Drig descriptor now uses the common protein-only Cα source and a common structure-derived pocket rule.
 
-S2 applies inverse min–max normalization to distances and RMSF; positive min–max normalization to ln(largest-cluster fraction); and positive min–max normalization to the absolute value of signed GB ΔG.
+## Protein Cα RMSF validation
 
-DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene.
+Each `cpptraj.in` aligns the protein backbone to `md1.rst7` before calculating per-residue Cα RMSF. The common commands are:
 
-This is a descriptor-based ranking framework, not a trained predictive machine-learning model.
+```text
+trajin md1.nc 1 last 10
+autoimage
+center :1-N mass origin
+reference md1.rst7 parm solv_complexN.prmtop
+rms reference :1-N@CA,C,N
+atomicfluct \
+  out rmsf_protein_calpha.dat \
+  :1-N@CA byres
+```
 
-## Raw-data extraction results
+The 500 ns production settings are `dt=0.002 ps`, `nstlim=250000000`, `ntwx=5000`; the RMSF workflow analyses every tenth saved trajectory frame. All 15 systems passed the check that the protein residue endpoint in the CPPTRAJ mask, the protein residue identifiers in `complexN.pdb`, and the row identifiers in `rmsf_protein_calpha.dat` agree exactly.
 
-The uploaded analysis archive contained 15 system folders and 771 files. The extracted distance time series contain 50,000 frames per descriptor for every system. The largest cluster was selected by maximum frame count from each `dmcs_cluster_summary.dat`.
+CPPTRAJ's `atomicfluct` does not RMS-fit implicitly; the explicit preceding `rms reference` step is part of the method (AMBER-hub: https://amberhub.chpc.utah.edu/atomicfluct-rmsf/).
 
-For every system, the MM/GBSA value was extracted from the first `DELTA TOTAL` row in the GB section of `FINAL_RESULTS_UNL_MMPBSA.dat`. The PB `DELTA TOTAL` value is retained separately in the raw-descriptor CSV for traceability and is not used for Dene.
+## Harmonized catalytic-pocket RMSF
 
-The complete numerical results are in:
-- `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`
-- `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv`
+The prepared structures contain UNP (PLP), UNL (furfural) and UNI (isopropylamine). For each system, protein residues with at least one heavy atom within 5.0 Å of any heavy atom in the combined UNP/UNL/UNI set are selected. The corresponding residue-wise Cα RMSF values are read from the common `rmsf_protein_calpha.dat` output using original residue identifiers. The arithmetic mean of those values is the Drig input.
 
-The complete set of selected input definitions is consolidated in `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`.
+This procedure creates a per-system residue set from the structure itself; residue numbers are not transferred between enzymes. The complete 5.0 Å pocket map is supplied in `DMCS_ACTIVE_SITE_RESIDUES.csv`. The 4.0/5.0/6.0 Å sensitivity results are supplied in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
 
-## RMSF provenance
+The 5.0 Å pocket contains 25–36 residues per system. The harmonized ATA117-Rd11 score is 0.915409 (rank 1). This replaces earlier score tables generated with non-uniform legacy RMSF masks. Values from different RMSF definitions must not be mixed.
 
-The archive contains different levels of RMSF evidence:
+## Distance, clustering and MM/GBSA provenance
 
-- ATA117-Rd11: six-residue active-site output; mean = 1.476733 Å; residues 106, 115, 142, 188, 231 and 249.
-- A0A2G0CFH8: 18-residue active-site output; mean = 1.085317 Å; the exact residue list is preserved in the raw descriptor CSV.
-- AspC: 11-residue active-site output; mean = 1.560673 Å.
-- AptA: 11-residue active-site output; mean = 1.817764 Å.
-- Lys-W-TA: the active-site RMSF file contains one residue (136; 0.7051 Å). This is a single-residue value and should not be interpreted as a multi-residue active-site mean without an explicit methodological justification.
-- S-omega-TA: the active-site RMSF file contains one protein residue (288; 0.8765 Å). The input mask also names ligand/cofactor residue numbers, but those do not yield additional Cα RMSF rows.
-- H-188, G-188, F-188, AB-R-ATA, A0A1B728H4, A0A1Z5HPJ6, S-188, CV-TAm and W-188: residue-wise RMSF output is present, but a matching active-site residue selection/output was not present in the uploaded bundle.
+All 45 distance time series (three for each system) contain 50,000 frames. S1 calculates the mean of the second numeric column. The catalytic residue identity and distance output filename are listed in `S1_INPUTS.csv`.
 
-The RMSF-by-residue series for systems without an active-site output have been preserved in `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv`. A comparable active-site mean must be calculated only after residues are mapped to the catalytic pocket for each system. Do not transfer one enzyme's residue numbering to another without structural alignment and verification.
+For every cluster summary, S1 selects the cluster with the greatest frame count and retains its fraction. Cluster frame counts sum to 50,000 for each system. For the UNL-containing MMPBSA result, the first `DELTA TOTAL` row is retained as GB and the second as PB. Signed GB ΔG is retained in the descriptor matrix; its absolute magnitude is used only for Dene.
 
-The historical RMSF values in `S1_INPUTS.csv` remain marked unverified where a source active-site mask/output was not available. Two single-residue selections are also explicitly flagged for review. The S1 script blocks standard extraction while these statuses remain unresolved; `--allow-provisional` is available only for exploratory table regeneration.
+## DMCS definition
 
-## Distance descriptor validation
+Outer weights: Dcat 0.40, Drig 0.25, Dconf 0.15, Dene 0.20. Dcat subweights: catalytic-residue–PLP 0.50, PLP–furfural 0.25 and PLP–IPA 0.25. Distances and RMSF are inverse min–max normalized; ln(cluster fraction) and absolute GB ΔG are positive min–max normalized.
 
-The following fields are included in the raw-descriptor CSV:
-- Catalytic residue–PLP mean distance (Å)
-- PLP–furfural mean distance (Å)
-- PLP–isopropylamine mean distance (Å)
-- Number of frames used for each mean
-- Catalytic residue identity and distance-file name
+## Reproducibility outputs
 
-Means were computed from the second numeric column of each CPPTRAJ distance series. The catalytic distance file mapping is listed per system in the raw-descriptor table and the corresponding input file is included in the consolidated input documentation.
+- `S1_INPUTS.csv`: system-folder, catalytic-residue and distance-file manifest.
+- `S1_descriptor_extraction.py`: raw descriptor extraction, structure-derived pocket mapping and sensitivity calculation.
+- `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`: frame counts, mean distances, dominant cluster, GB/PB and pocket summaries.
+- `DMCS_ACTIVE_SITE_RESIDUES.csv`: canonical pocket membership and per-residue distance/RMSF data.
+- `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`: sensitivity to the 4.0, 5.0 and 6.0 Å pocket boundary.
+- `DMCS_RESULTS.csv`, `DMCS_STANDARDIZED.csv` and `DMCS_Final_Ranking.csv`: raw descriptor matrix, normalized scores and ranking.
+- `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`: collected per-system MD, CPPTRAJ, RMSF, clustering and MMPBSA definitions.
 
-## Clustering validation
+## Quality-control checklist
 
-For each system, the row with the greatest frame count was selected from `dmcs_cluster_summary.dat`. The raw-descriptor table records the dominant cluster frame count, cluster fraction and total number of clusters.
+- [x] All 15 system folders and differently named RMSF outputs inspected.
+- [x] Common Cα RMSF output present and residue-mapped in all systems.
+- [x] Protein backbone RMS fit precedes `atomicfluct`.
+- [x] Protein residue endpoint, prepared structure and Cα RMSF residue IDs agree.
+- [x] All 45 distance series contain 50,000 frames.
+- [x] Cluster frame totals sum to 50,000; dominant cluster selected by maximum count.
+- [x] GB and PB energy rows extracted separately.
+- [x] Common 5.0 Å pocket map and 4.0/5.0/6.0 Å sensitivity results generated.
+- [x] Raw, normalized and ranked DMCS tables regenerated.
 
-## MM/GBSA validation
-
-The signed GB `DELTA TOTAL` was extracted from the first `DELTA TOTAL` row in the GB section of each UNL-containing MMPBSA output. The PB value is recorded separately for traceability. S2 uses the absolute value of the signed GB result for energetic normalization.
-
-For ATA117-Rd11, the selected rerun gives GB ΔG = -12.4786 kcal/mol. Do not substitute values from an earlier run.
-
-## Current ranking
-
-The current provisional ranking was recalculated from exact raw distance means, dominant-cluster fractions and GB energy values, combined with the RMSF inputs currently recorded in the manifest.
-
-ATA117-Rd11 remains rank 1 with DMCS = 0.9063. The ranking remains provisional because active-site RMSF residue mapping is not yet complete and consistent for all 15 systems. The current CSVs preserve the exact inputs and normalization outputs used to obtain this provisional ranking.
-
-## Reproducibility closure checklist
-
-- [x] Confirmed all 15 analysis folders are represented in the uploaded archive.
-- [x] Extracted all three distance-series means for each system (50,000 frames per series).
-- [x] Selected the largest cluster by frame count for each system.
-- [x] Extracted the first GB `DELTA TOTAL` value from each UNL-containing MMPBSA output.
-- [x] Preserved system-specific distance, cluster, RMSF, MD and MMPBSA input definitions in a consolidated file.
-- [x] Preserved residue-wise RMSF data available in the archive.
-- [ ] Establish and document a structurally mapped active-site residue set for every system.
-- [ ] Recalculate the active-site RMSF means from those finalized selections.
-- [ ] Regenerate S1–S3 after all RMSF statuses are finalized.
-- [ ] Freeze manuscript-reported numerical scores after the RMSF checks are complete.
-
-## File-handling note
-
-Large production NetCDF trajectories are not included. The repository contains machine-readable processed descriptors and the compact analysis inputs needed to inspect the reported descriptor and scoring workflow.
+Production trajectories are not included. The public repository provides compact machine-readable descriptors, the residue-level pocket map, system-specific method inputs and scripts needed to reproduce the descriptor-level analysis.
