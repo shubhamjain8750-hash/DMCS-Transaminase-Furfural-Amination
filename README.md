@@ -1,70 +1,70 @@
 # Dynamic Mechanistic Conformation Scoring (DMCS)
 
-## Project Overview
+## Research overview
 
-This repository accompanies the research study:
+This repository provides the computational data, input examples and analysis scripts accompanying the study of PLP-dependent transaminases for the conversion of biomass-derived furfural to furfurylamine.
 
-**Dynamic Mechanistic Conformation Scoring-Guided Identification and Experimental Validation of a Transaminase for Biomass-Derived Furfural Amination**
+The workflow combines sequential molecular docking, molecular-dynamics simulations and a descriptor-based comparative framework termed **Dynamic Mechanistic Conformation Scoring (DMCS)**. DMCS is a comparative prioritization metric; it is not an experimentally measured activity, kinetic parameter or absolute binding free energy.
 
-The study introduces Dynamic Mechanistic Conformation Scoring (DMCS), a molecular-dynamics-based descriptor framework for systematic prioritization of PLP-dependent transaminases for the biocatalytic conversion of biomass-derived furfural into furfurylamine.
+## Repository map
 
-## DMCS Framework
+| Directory | Purpose | Contents |
+|---|---|---|
+| [01_Enzyme_Screening](01_Enzyme_Screening/) | Candidate screening and panel definition | CSV versions of Supporting Information Tables S1–S4 |
+| [02_Docking](02_Docking/) | Sequential docking strategy | Workflow documentation; score tables are in `01_Enzyme_Screening/` |
+| [03_MD_Inputs](03_MD_Inputs/) | MD preparation/production and trajectory analysis inputs | AMBER input examples, CPPTRAJ templates and 30 PDB structures |
+| [04_DMCS_Analysis](04_DMCS_Analysis/) | Canonical DMCS analysis | Raw/normalized tables, scripts, per-enzyme summaries, collected DAT outputs and provenance documentation |
+| [05_Computational_Environment](05_Computational_Environment/) | Software and execution environment | Environment notes and Python dependency pointer |
 
-The DMCS framework integrates four descriptor components:
+## DMCS model
 
-1. Catalytic readiness (Dcat)
-2. Active-site rigidity (Drig)
-3. Conformational persistence (Dconf)
-4. Energetic stabilization (Dene)
+`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene`
 
-The composite score is:
+- **Dcat — catalytic readiness:** weighted combination of catalytic-residue–PLP (0.50), PLP–furfural (0.25) and PLP–isopropylamine (0.25) distance descriptors.
+- **Drig — active-site rigidity:** inverse-normalized mean Cα RMSF of a structure-derived catalytic pocket.
+- **Dconf — conformational persistence:** positive min–max normalization of the natural logarithm of the dominant-cluster frame fraction.
+- **Dene — energetic stabilization:** positive min–max normalization of the absolute magnitude of the signed GB binding-energy estimate.
 
-`DMCS = 0.40(Dcat) + 0.25(Drig) + 0.15(Dconf) + 0.20(Dene)`
+Distances and pocket RMSF are inverse min–max normalized. Log dominant-cluster fraction and absolute GB energy magnitude are positive min–max normalized across the defined 15-system panel. The resulting score is therefore panel-dependent.
 
-The catalytic-readiness component uses catalytic-residue–PLP, PLP–furfural and PLP–isopropylamine distance descriptors with subweights of 0.50, 0.25 and 0.25, respectively.
+## Canonical 15-system result
 
-## Repository Contents
+Using the harmonized 5.0 Å structure-derived pocket definition, **ATA117-Rd11 ranks first (DMCS = 0.915409)**. The complete ranking is in [DMCS_Final_Ranking.csv](04_DMCS_Analysis/DMCS_Final_Ranking.csv). Pocket definition and cutoff sensitivity are documented in [DMCS_RMSF_METHOD.md](04_DMCS_Analysis/DMCS_RMSF_METHOD.md).
 
-- Enzyme screening datasets.
-- Sequential molecular-docking methodology and supporting data.
-- Molecular-dynamics and MM/GBSA input parameters.
-- System-specific DMCS distance and clustering input files.
-- Machine-readable raw descriptor tables and residue-wise RMSF data.
-- Descriptor extraction, normalization and ranking scripts.
-- Processed computational datasets and reproducibility documentation.
+## Data availability and scope
 
-The 15-system DMCS analysis and its supporting inputs are documented in `04_DMCS_Analysis/`.
+### Included
+- Screening CSV files corresponding to Supporting Information Tables S1–S4.
+- AMBER minimization, heating, density/equilibration and production input examples.
+- CPPTRAJ input examples for RMSD/RMSF/hydrogen-bond and Rg/SASA calculations.
+- Prepared unsolvated enzyme–PLP–furfural–IPA structures and solvated stage-2 PDB snapshots for 15 systems.
+- 199 collected numerical DAT outputs, including RMSF, catalytic distance, clustering and MMPBSA outputs where present.
+- Harmonized per-enzyme DMCS descriptors, pocket residue maps, normalization/ranking scripts and audit documentation.
 
-## Computational Software
+### Not included
+- Production MD trajectories and the complete set of binary AMBER restart/topology files.
+- Complete per-enzyme docking pose/PDBQT/configuration packages.
+- A complete set of post-MD result series for RMSD, radius of gyration, SASA and hydrogen-bond occupancy. Analysis input templates are supplied, but these corresponding result DAT files are not part of the current public data package.
+- Experimental chromatograms, HPLC data or supplementary figure files.
 
-- AMBER24
-- CPPTRAJ
-- AutoDock Vina
-- Python (NumPy and pandas)
-- PyMOL and other molecular-visualization tools
+The absence of a result file must not be interpreted as a zero value or a failed analysis. Only analyses represented by deposited output files should be described as deposited results.
 
 ## Reproducibility
 
-The repository provides the S1–S3 analysis scripts, machine-readable descriptor data, the per-enzyme data directory (`04_DMCS_Analysis/15_Enzyme_Analysis_Data/`), system-specific analysis inputs, and the source tables used to inspect distance, clustering, RMSF and MM/GBSA descriptors. Molecular-dynamics trajectory files are not included.
+**Reproduce normalization and ranking from deposited descriptors:** install dependencies from [requirements.txt](04_DMCS_Analysis/requirements.txt) and follow [DMCS_REPRODUCTION_GUIDE.md](04_DMCS_Analysis/DMCS_REPRODUCTION_GUIDE.md). This route does not require trajectories.
 
-The canonical rigidity descriptor is generated for all 15 systems from the common protein-only Cα RMSF output and a structure-derived 5.0 Å catalytic-pocket definition. The residue mapping, per-system source tables and 4.0/5.0/6.0 Å sensitivity analysis are documented in `04_DMCS_Analysis/`.
+**Re-extract descriptors from original MD analysis folders:** S1 requires original per-system folders and their distance, cluster, RMSF and MMPBSA files. These complete source folders and trajectories are not included. See [S1_INPUTS.csv](04_DMCS_Analysis/S1_INPUTS.csv) and the reproduction guide for the input contract.
 
-## Data and Software Availability
-
-The computational scripts, machine-readable descriptor datasets, per-enzyme analysis outputs for all 15 systems, structure-derived catalytic-pocket RMSF maps, system-specific analysis inputs and supporting reproducibility documentation are publicly available in this GitHub repository:
-
-https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination
-
-The Supporting Information provides the detailed computational methodology and supplementary results. Molecular-dynamics trajectories are not included.
+The canonical Drig descriptor uses the protein-only `rmsf_protein_calpha.dat` source and a per-system, structure-derived 5.0 Å heavy-atom pocket. Legacy whole-complex or manually selected active-site RMSF files are retained as source records but are not substituted into the canonical cross-system calculation.
 
 ## Citation
 
-Please cite the associated research article when using this repository. Publication details and DOI will be added following publication.
+Please cite the associated research article and its Supporting Information when using these data or methods. Add publication details and DOI here once available.
 
 ## Contact
 
-For questions regarding the computational methodology and associated research, please refer to the corresponding authors listed in the manuscript.
+For scientific questions, contact the corresponding authors listed in the associated manuscript.
 
-## Current 15-system DMCS analysis
+## Repository
 
-The harmonized 5.0 Å structure-derived catalytic-pocket RMSF analysis ranks **ATA117-Rd11** first (DMCS = **0.915409**). The complete 15-system ranking, component scores, residue maps, per-enzyme data and cutoff-sensitivity results are maintained in [`04_DMCS_Analysis/`](04_DMCS_Analysis/README.md).
+https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination

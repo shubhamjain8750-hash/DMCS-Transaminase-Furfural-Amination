@@ -1,86 +1,59 @@
-# DMCS 15-system data provenance and validation report
+# DMCS 15-system data provenance and quality-control report
 
 ## Scope
 
-This report documents the source files and quality-control procedures for the 15-system comparative DMCS analysis. ATA117-Rd11 remains the lead system selected for experimental follow-up.
+This audit records the source-file checks and consistency rules used to build the canonical 15-system DMCS descriptor dataset. The canonical output is the 5.0 Å structure-derived pocket analysis and its 15-system ranking.
 
-## Direct inspection of RMSF files
+## Source inventory
 
-The folders were inspected using a broad RMSF filename inventory rather than assuming that all systems used a single name.
+The supplied source archive was inspected across 15 enzyme analysis directories. Each system contained the common protein-only `rmsf_protein_calpha.dat` and a CPPTRAJ input. Whole-complex RMSF outputs, `rmsf_byres_clean.dat` in a subset, and separately named `active_site_rmsf.dat` outputs in a subset were also found. These differently defined legacy files are retained as provenance records but are not mixed into the canonical cross-system Drig descriptor.
 
-- All 15 systems contain `cpptraj.in`.
-- All 15 systems contain `rmsf_protein_calpha.dat`.
-- All 15 systems contain `rmsf_complex_all_byres.dat`.
-- Nine systems additionally contain `rmsf_byres_clean.dat`.
-- Six systems contain a separately named `active_site_rmsf.dat` and matching `active_site_rmsf.in`; four selections are multi-residue, while two are single-residue.
-- The five Lys188 substitution folders contain residue-wise RMSF outputs and first-frame inspection structures/inputs (`check_*.in`, `check_*.pdb`).
+The public repository contains the 15-system prepared PDB structures and stage-2 PDB snapshots; collected per-system DAT files and their SHA256 manifest; harmonized raw descriptor matrix, pocket residue map, RMSF profiles, normalized values and ranking; and S1–S3 scripts and method documentation.
 
-The earlier assumption that variant folders lacked RMSF data was incorrect; the files were stored under different names. Those supplementary calculations are retained for traceability. The cross-system Drig descriptor now uses the common protein-only Cα source and a common structure-derived pocket rule.
+The complete original per-system analysis directories, production trajectory files and binary AMBER restart/topology files are not included. Full S1 extraction from original source folders therefore requires a separate copy of those source directories.
 
-## Protein Cα RMSF validation
+## Common Cα RMSF source and alignment
 
-Each `cpptraj.in` aligns the protein backbone to `md1.rst7` before calculating per-residue Cα RMSF. The common commands are:
+The common RMSF source is `rmsf_protein_calpha.dat` for each system. It is a protein-only, per-residue Cα RMSF profile. In the source workflow the protein backbone is aligned before `atomicfluct` is applied. Whole-complex or ligand RMSF outputs are not interchangeable with this metric.
 
-```text
-trajin md1.nc 1 last 10
-autoimage
-center :1-N mass origin
-reference md1.rst7 parm solv_complexN.prmtop
-rms reference :1-N@CA,C,N
-atomicfluct \
-  out rmsf_protein_calpha.dat \
-  :1-N@CA byres
-```
+The 500 ns production control is defined by `dt=0.002 ps` and `nstlim=250000000`. Coordinates are saved every 5,000 steps, equivalent to 10 ps and 50,000 saved frames for a completed trajectory. The supplied common CPPTRAJ examples include a 330-residue protein mask; because the evaluated enzymes have different lengths and residue numbering, the mask must be system-adjusted before reuse.
 
-The 500 ns production settings are `dt=0.002 ps`, `nstlim=250000000`, `ntwx=5000`; the RMSF workflow analyses every tenth saved trajectory frame. All 15 systems passed the check that the protein residue endpoint in the CPPTRAJ mask, the protein residue identifiers in `complexN.pdb`, and the row identifiers in `rmsf_protein_calpha.dat` agree exactly.
+## Structure-derived catalytic pocket
 
-CPPTRAJ's `atomicfluct` does not RMS-fit implicitly; the explicit preceding `rms reference` step is part of the method (AMBER-hub: https://amberhub.chpc.utah.edu/atomicfluct-rmsf/).
+The prepared `complexN.pdb` structures contain UNP (PLP), UNL (furfural) and UNI (isopropylamine). For each enzyme independently: (1) exclude hydrogen/deuterium atoms from the contact calculation; (2) calculate the minimum distance between any protein heavy atom in a residue and any heavy atom in the combined UNP/UNL/UNI set; (3) include residues at or below 5.0 Å; (4) map each residue's Cα RMSF from the common `rmsf_protein_calpha.dat` using that system's residue identifier; and (5) calculate the arithmetic mean of the selected residue-wise values.
 
-## Harmonized catalytic-pocket RMSF
+The full residue membership, minimum distances and mapped RMSF values are in `DMCS_ACTIVE_SITE_RESIDUES.csv`. The 4.0, 5.0 and 6.0 Å cutoff sensitivity results are in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
 
-The prepared structures contain UNP (PLP), UNL (furfural) and UNI (isopropylamine). For each system, protein residues with at least one heavy atom within 5.0 Å of any heavy atom in the combined UNP/UNL/UNI set are selected. The corresponding residue-wise Cα RMSF values are read from the common `rmsf_protein_calpha.dat` output using original residue identifiers. The arithmetic mean of those values is the Drig input.
+## Other descriptor provenance
 
-This procedure creates a per-system residue set from the structure itself; residue numbers are not transferred between enzymes. The complete 5.0 Å pocket map is supplied in `DMCS_ACTIVE_SITE_RESIDUES.csv`. The 4.0/5.0/6.0 Å sensitivity results are supplied in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
+- Catalytic-residue–PLP, PLP–furfural and PLP–IPA distance descriptors are means of their respective CPPTRAJ time series. Each of the 45 inspected series contains 50,000 frames.
+- The dominant cluster is selected by maximum frame count in `dmcs_cluster_summary.dat`; source cluster frame totals sum to 50,000 per system.
+- The first `DELTA TOTAL` entry in the UNL-containing MMPBSA report is treated as GB and the second as PB. Signed GB is retained; its absolute magnitude is used only for Dene.
 
-The 5.0 Å pocket contains 25–36 residues per system. The harmonized ATA117-Rd11 score is 0.915409 (rank 1). This replaces earlier score tables generated with non-uniform legacy RMSF masks. Values from different RMSF definitions must not be mixed.
+## DMCS weights and scaling
 
-## Distance, clustering and MM/GBSA provenance
+`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene`.
 
-All 45 distance time series (three for each system) contain 50,000 frames. S1 calculates the mean of the second numeric column. The catalytic residue identity and distance output filename are listed in `S1_INPUTS.csv`.
+Dcat subweights: catalytic-residue–PLP 0.50, PLP–furfural 0.25 and PLP–IPA 0.25. Distance and pocket-RMSF descriptors are inverse min–max scaled. The natural logarithm of the dominant-cluster fraction and the absolute GB ΔG magnitude are positive min–max scaled over the defined 15-system panel.
 
-For every cluster summary, S1 selects the cluster with the greatest frame count and retains its fraction. Cluster frame counts sum to 50,000 for each system. For the UNL-containing MMPBSA result, the first `DELTA TOTAL` row is retained as GB and the second as PB. Signed GB ΔG is retained in the descriptor matrix; its absolute magnitude is used only for Dene.
+## Publicly reproducible components
 
-## DMCS definition
+- S2 normalization and S3 ranking can be run from the checked-in raw descriptor matrix.
+- S1 is provided for independent source-data extraction, but requires the original per-system analysis folders specified in `S1_INPUTS.csv`.
+- The repository does not include production trajectories and cannot reproduce a new MD trajectory from PDB snapshots alone.
 
-Outer weights: Dcat 0.40, Drig 0.25, Dconf 0.15, Dene 0.20. Dcat subweights: catalytic-residue–PLP 0.50, PLP–furfural 0.25 and PLP–IPA 0.25. Distances and RMSF are inverse min–max normalized; ln(cluster fraction) and absolute GB ΔG are positive min–max normalized.
+## Quality-control summary
 
-## Reproducibility outputs
+- [x] Fifteen source systems inventoried.
+- [x] Common protein-only Cα RMSF source identified for each system.
+- [x] Structure-to-RMSF residue correspondence checked.
+- [x] 45 catalytic-distance series checked for 50,000 frames each.
+- [x] Dominant cluster selected by frame count; cluster totals checked.
+- [x] GB and PB `DELTA TOTAL` entries distinguished.
+- [x] Structure-derived 5.0 Å pocket map generated separately for each enzyme.
+- [x] 4.0/5.0/6.0 Å cutoff sensitivity calculated.
+- [x] Raw descriptors, normalized scores and final ranking generated.
 
-- `S1_INPUTS.csv`: system-folder, catalytic-residue and distance-file manifest.
-- `S1_descriptor_extraction.py`: raw descriptor extraction, structure-derived pocket mapping and sensitivity calculation.
-- `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`: frame counts, mean distances, dominant cluster, GB/PB and pocket summaries.
-- `DMCS_ACTIVE_SITE_RESIDUES.csv`: canonical pocket membership and per-residue distance/RMSF data.
-- `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`: sensitivity to the 4.0, 5.0 and 6.0 Å pocket boundary.
-- `DMCS_RESULTS.csv`, `DMCS_STANDARDIZED.csv` and `DMCS_Final_Ranking.csv`: raw descriptor matrix, normalized scores and ranking.
-- `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`: collected per-system MD, CPPTRAJ, RMSF, clustering and MMPBSA definitions.
+## Interpretation and limitations
 
-## Quality-control checklist
-
-- [x] All 15 system folders and differently named RMSF outputs inspected.
-- [x] Common Cα RMSF output present and residue-mapped in all systems.
-- [x] Protein backbone RMS fit precedes `atomicfluct`.
-- [x] Protein residue endpoint, prepared structure and Cα RMSF residue IDs agree.
-- [x] All 45 distance series contain 50,000 frames.
-- [x] Cluster frame totals sum to 50,000; dominant cluster selected by maximum count.
-- [x] GB and PB energy rows extracted separately.
-- [x] Common 5.0 Å pocket map and 4.0/5.0/6.0 Å sensitivity results generated.
-- [x] Raw, normalized and ranked DMCS tables regenerated.
-
-Production trajectories are not included. The public repository provides compact machine-readable descriptors, the residue-level pocket map, system-specific method inputs and scripts needed to reproduce the descriptor-level analysis.
-
-
-## Organized per-enzyme dataset
-
-All 15 systems now have a dedicated subdirectory in `15_Enzyme_Analysis_Data/`. Each folder contains the system's descriptor summary, active-site residue/RMSF map, full protein Cα RMSF series in CSV and CPPTRAJ-style DAT format, and cutoff-sensitivity results. These per-system files are generated from the same source tables used by the S1 workflow and preserve enzyme-specific residue numbering.
-
-The previous mixed-source RMSF table has been replaced by the uniform `rmsf_protein_calpha.dat` source for every system. The individual legacy `active_site_rmsf.dat`, `rmsf_byres_clean.dat` and `rmsf_complex_all_byres.dat` records remain documented as supplementary analysis outputs; they are not mixed into the canonical cross-system Drig descriptor.
+The score is a relative prioritization metric over this specific panel and descriptor set. It is not an absolute estimate of catalytic rate, substrate conversion or experimentally measured binding affinity. Missing RMSD, Rg, SASA or hydrogen-bond result files are not treated as zeros and are not claimed as deposited analyses.

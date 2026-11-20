@@ -1,56 +1,53 @@
-# Harmonized catalytic-pocket RMSF procedure
+# Harmonized catalytic-pocket RMSF method
 
-## Purpose and source-file audit
+## Purpose
 
-This document defines the residue-level RMSF procedure used to calculate Drig consistently across the 15 PLP-dependent transaminase systems. Each system's pocket is identified independently from its own prepared ternary-complex structure; residue numbers are not transferred between enzymes.
+This document defines the RMSF-based rigidity descriptor (Drig) used in the canonical 15-system DMCS comparison. The method avoids mixing RMSF outputs generated from different selections and defines the catalytic pocket separately for every enzyme from its own prepared complex.
 
-A filename-wide inspection found that all 15 system folders contain `cpptraj.in`, `rmsf_protein_calpha.dat` and `rmsf_complex_all_byres.dat`. Nine also contain `rmsf_byres_clean.dat`. Six contain a separately named `active_site_rmsf.dat` with matching `active_site_rmsf.in` (four multi-residue selections and two single-residue selections). The variant folders additionally contain residue-wise RMSF products and `check_*.in` / `check_*.pdb` inspection files. These supplementary analyses are retained for traceability. The common cross-system source is `rmsf_protein_calpha.dat`, which is present in every system and has the same protein-only Cα definition.
+## Common RMSF source
 
-## CPPTRAJ Cα RMSF workflow
+The common source is `rmsf_protein_calpha.dat` in each of the 15 system folders. It is a protein-only, per-residue Cα RMSF profile. The corresponding CPPTRAJ workflow images the trajectory, centers the protein, fits the protein backbone to a reference structure and then calculates residue-wise Cα fluctuations.
 
-The system-specific `cpptraj.in` files share this pattern; N is the protein residue endpoint for that system:
+Representative command sequence (N is the system-specific protein residue endpoint):
 
-```text
-trajin md1.nc 1 last 10
-autoimage
-center :1-N mass origin
-reference md1.rst7 parm solv_complexN.prmtop
-rms reference :1-N@CA,C,N
-atomicfluct \
-  out rmsf_protein_calpha.dat \
-  :1-N@CA byres
-```
+    trajin md1.nc 1 last 10
+    autoimage
+    center :1-N mass origin
+    reference md1.rst7 parm solv_complexN.prmtop
+    rms reference :1-N@CA,C,N
+    atomicfluct out rmsf_protein_calpha.dat :1-N@CA byres
 
-Production parameters are `dt=0.002 ps`, `nstlim=250000000` and `ntwx=5000`, corresponding to 500 ns with 50,000 saved frames. The CPPTRAJ RMSF calculation samples every tenth saved frame. The explicit `rms reference` action aligns the protein backbone (Cα, C and N) to `md1.rst7` before `atomicfluct`. CPPTRAJ's `atomicfluct` does not perform RMS fitting implicitly; the prior RMS fit removes global translation and rotation before positional fluctuations are measured (AMBER-hub documentation: https://amberhub.chpc.utah.edu/atomicfluct-rmsf/).
+The public example input uses a 330-residue mask and must be adapted for systems with different residue counts. The explicit backbone RMS fit precedes `atomicfluct`; `atomicfluct` itself does not perform this fit.
 
-For every system, the protein residue endpoint in the CPPTRAJ mask, the protein residue identifiers in `complexN.pdb`, and the row identifiers in `rmsf_protein_calpha.dat` match exactly.
+The production settings `dt=0.002 ps`, `nstlim=250000000` and `ntwx=5000` correspond to 500 ns and 50,000 saved frames when the completed trajectory is written. The RMSF input samples every tenth saved frame.
 
-## Structure-derived pocket definition
+## Structure-derived catalytic pocket
 
-The prepared `complexN.pdb` files contain UNP (PLP), UNL (furfural) and UNI (isopropylamine). For each system independently:
+The prepared structures contain PLP (`UNP`), furfural (`UNL`) and IPA (`UNI`). For each system independently:
 
-1. Select the heavy atoms (exclude H and D) in UNP, UNL and UNI.
-2. For every protein residue R, calculate the minimum Euclidean distance between any protein heavy atom in R and any heavy atom in the combined UNP/UNL/UNI set: `d(R) = min ||x_i - x_j||`.
-3. Define the catalytic pocket as protein residues with `d(R) <= 5.0 Å`.
-4. Retrieve each selected residue's Cα RMSF from `rmsf_protein_calpha.dat` using its original residue number.
-5. Calculate the pocket RMSF as the arithmetic mean of those residue-wise Cα RMSF values: `RMSF_pocket = sum(RMSF_CA,R) / N_pocket`.
+1. Retain protein atoms and heavy atoms of UNP, UNL and UNI; exclude H and D.
+2. For every protein residue R, calculate the minimum distance between any protein heavy atom in R and any heavy atom in the combined UNP/UNL/UNI set: `d(R) = min ||x_i - x_j||`.
+3. Select residues satisfying `d(R) <= 5.0 Å`.
+4. Map each selected residue's Cα RMSF from `rmsf_protein_calpha.dat` using its original residue number.
+5. Calculate the arithmetic mean: `RMSF_pocket = (1/N) * sum(RMSF_CA,R)`.
 
-The 5.0 Å heavy-atom shell is the canonical Drig definition. It is generated independently from each enzyme's prepared ternary structure. The full machine-readable residue map, including residue name, nearest ligand/cofactor, minimum distance and Cα RMSF, is supplied in `DMCS_ACTIVE_SITE_RESIDUES.csv`.
+The 5.0 Å cutoff is the canonical definition. No fixed residue-number mask is transferred between enzymes. The full residue-level map is `DMCS_ACTIVE_SITE_RESIDUES.csv`.
 
 ## Cutoff sensitivity
 
-The pocket was recalculated at 4.0, 5.0 and 6.0 Å. Pocket means, component scores and DMCS ranks are in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`. The leading two systems and bottom two systems retain their positions across these cutoffs; intermediate rankings change modestly. This sensitivity analysis makes the operational pocket boundary explicit.
+The pocket is also recalculated at 4.0 and 6.0 Å. System-specific residue counts, pocket means, component scores, composite scores and ranks are provided in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`. The 5.0 Å value remains the canonical analysis.
 
-## Other descriptors and DMCS
+## Other descriptors and score
 
-- Catalytic-residue–PLP, PLP–furfural and PLP–IPA distances are arithmetic means of column 2 in their CPPTRAJ time-series files. All 45 series contain 50,000 frames.
-- Conformational persistence is the frame fraction of the cluster with the maximum frame count in `dmcs_cluster_summary.dat`.
-- Energetic stabilization uses the first `DELTA TOTAL` row from the UNL-containing MMPBSA output (GB). The second row is PB. Signed GB ΔG is retained; its absolute magnitude is used only for Dene.
+The three distance descriptors are means of their CPPTRAJ distance time series. Each series contains 50,000 frames in the inspected source data. Conformational persistence is the fraction of frames in the largest cluster (selected by maximum frame count). The first `DELTA TOTAL` value in the UNL-containing MMPBSA report is used as the GB result; the second is PB. Signed GB ΔG is retained in the raw data, while its absolute magnitude is used for Dene.
 
-Weights: Dcat = 0.40, Drig = 0.25, Dconf = 0.15, Dene = 0.20. Dcat subweights: catalytic-residue–PLP = 0.50, PLP–furfural = 0.25, PLP–IPA = 0.25. Distances and pocket RMSF are inverse min–max normalized; ln(largest-cluster fraction) and |GB ΔG| are positive min–max normalized.
+    DMCS = 0.40*Dcat + 0.25*Drig + 0.15*Dconf + 0.20*Dene
+    Dcat = 0.50*Dcat(catalytic residue–PLP)
+         + 0.25*Dcat(PLP–furfural)
+         + 0.25*Dcat(PLP–IPA)
 
-`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene`.
+Distances and RMSF are inverse min–max normalized; log cluster fraction and absolute GB ΔG are positive min–max normalized over the 15-system panel.
 
-## S1 quality-control checks
+## Interpretation
 
-S1 checks the 15-system manifest, required source files, 50,000-frame distances, cluster frame totals, GB/PB energy rows, ligand heavy-atom inventory, protein RMS-fit-before-RMSF sequence, production MD parameters, protein residue endpoint and exact structure/RMSF residue-number correspondence. It writes the raw descriptor matrix, canonical pocket residue map, cutoff sensitivity, normalized table and final ranking.
+Lower pocket RMSF contributes a higher Drig component after inverse scaling. The mean summarizes positional fluctuation for the defined residues; it does not by itself prove catalytic competence or a specific chemical mechanism. Drig is interpreted as one component of the composite score.

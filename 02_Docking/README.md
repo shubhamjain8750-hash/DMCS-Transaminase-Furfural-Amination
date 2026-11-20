@@ -1,41 +1,23 @@
+# 02 — Sequential molecular docking
 
-# 02 - Molecular Docking
+## Objective
 
-## Overview
+Molecular docking was used as a staged computational filter to compare PLP-dependent transaminases for assembly of a plausible catalytic complex containing PLP, furfural and isopropylamine (IPA).
 
-This directory contains the molecular docking workflows and associated datasets used for computational screening of PLP-dependent enzymes for furfural amination.
+## Sequential workflow
 
-## Sequential Docking Protocol
+1. **PLP placement:** dock pyridoxal-5′-phosphate (PLP) into the enzyme active site.
+2. **Furfural placement:** retain the PLP-containing assembly and dock furfural.
+3. **IPA placement:** retain the PLP–furfural assembly and dock isopropylamine.
 
-A sequential docking strategy was employed to construct comparable catalytic assemblies across the selected enzyme systems.
+The staged score columns are reported in the CSV tables in [01_Enzyme_Screening](../01_Enzyme_Screening/README.md). The sequence is intended to assess whether the required components can be accommodated in a comparable active-site arrangement.
 
-The workflow involved:
+## Software and interpretation
 
-1. Docking pyridoxal-5'-phosphate (PLP) into the predicted active site.
-2. Docking furfural into the PLP-containing enzyme complex.
-3. Docking isopropylamine (IPA) into the resulting assembly.
+AutoDock Vina was used for docking. The reported docking scores are scoring-function estimates for comparative screening only. They should not be equated with experimental binding free energies, turnover rates or catalytic efficiencies. Docking alone does not establish a productive catalytic geometry or reaction mechanism; downstream MD and DMCS descriptors provide additional dynamic and mechanistic context.
 
-## Docking Software
+## Data availability and reproducibility boundary
 
-- AutoDock Vina
+The public repository includes machine-readable screening score tables in `01_Enzyme_Screening/` and MD starting structures in `03_MD_Inputs/15_Enzyme_MD_Complex_Structures/`. It does **not** currently include the complete per-enzyme docking package (prepared receptor/ligand PDBQT files, all Vina configuration files, search-box coordinates and pose files). The score tables can be inspected, but docking calculations cannot be independently rerun from this directory alone.
 
-## Docking Parameters
-
-- Exhaustiveness: 8
-- Grid dimensions: To be documented from the original configuration files.
-- Grid centre: To be documented from the original configuration files.
-
-## Expected Files
-
-- Docking score datasets in CSV format.
-- Prepared receptor structures.
-- Prepared ligand structures.
-- Docking configuration files.
-- Representative docking poses.
-- Supporting preparation scripts.
-
-## Associated Manuscript Sections
-
-- Section 2.2: Ligand and Protein Preparation
-- Section 2.3: Docking Protocol
-- Supporting Information: Tables S1-S4
+Do not infer missing search-box coordinates, exhaustiveness settings or pose-selection rules from the score tables. For exact reproduction, use the parameter values and preparation details stated in the final manuscript/Supporting Information and retain the original configuration files as a separate archive.

@@ -1,8 +1,22 @@
-# 15-enzyme MD complex structures
+# Prepared MD complex structures — 15 enzyme systems
 
-Each enzyme folder contains two PDB structures:
+This folder contains 30 PDB structures organized into 15 enzyme-specific subfolders. Each system has:
 
-1. `complexN.pdb`: prepared enzyme–PLP–furfural–isopropylamine solute assembly before solvation.
-2. `complexN_equil...2.pdb`: the corresponding solvated stage-2 equilibration snapshot (the original source filename is preserved, including source spelling).
+- `complexN.pdb`: prepared, unsolvated protein–ligand/cofactor assembly.
+- A source-named `complexN_equilibration2.pdb` or `complexN_equilbration2.pdb`: solvated stage-2 equilibration coordinate snapshot. The original spelling is retained.
 
-In these files the ligand/cofactor residue identifiers are UNP (PLP), UNL (furfural) and UNI (isopropylamine). The PDB files support structural inspection and reconstruction of the starting solute assembly. Production MD is restart-based and depends on the matching Amber topology/restart files; PDB snapshots are not substitutes for those binary inputs.
+## Residue identifiers
+
+| Residue name | Component |
+|---|---|
+| `UNP` | Pyridoxal-5′-phosphate (PLP) |
+| `UNL` | Furfural |
+| `UNI` | Isopropylamine (IPA) |
+
+## Interpretation
+
+The unsolvated PDB is the prepared solute assembly. The stage-2 PDB is a coordinate snapshot for structural inspection. It is **not** the binary production restart file. Production MD uses the corresponding AMBER restart and topology files, which are not included here.
+
+## Integrity and provenance
+
+`PDB_STRUCTURE_MANIFEST.csv` lists enzyme label, original source directory, original filename, repository-relative path, file size, SHA256 checksum, atom count, protein-residue count and UNP/UNL/UNI atom counts. Source directory names have been kept intact to preserve traceability.

@@ -1,76 +1,47 @@
-# 04 – Dynamic Mechanistic Conformation Scoring (DMCS) analysis
+# 04 — Dynamic Mechanistic Conformation Scoring (DMCS)
 
-This directory contains the reproducible S1–S3 workflow for comparative evaluation of 15 PLP-dependent transaminase systems involved in furfural amination.
+## Purpose and scope
 
-## DMCS model
+This directory contains the canonical 15-system DMCS analysis: source descriptor tables, per-enzyme processed outputs, normalization/ranking scripts, RMSF pocket definition, provenance audit and collected numerical DAT files.
 
-`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene`.
+DMCS is a comparative, descriptor-based prioritization framework. It integrates catalytic geometry, active-site flexibility, conformational persistence and an MM/GBSA-derived energetic descriptor. It is not an experimentally calibrated activity predictor.
 
-Dcat is composed of catalytic-residue–PLP distance (0.50), PLP–furfural distance (0.25) and PLP–isopropylamine distance (0.25). Distances and pocket RMSF are inverse min–max normalized; ln(largest-cluster fraction) and |GB ΔG| are positive min–max normalized.
+## DMCS equation and weights
 
-## Reproducible files
+`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene`
 
-- `S1_INPUTS.csv`: system folders, catalytic residues and distance-output names.
-- `S1_descriptor_extraction.py`: descriptor extraction, common RMSF pocket definition, validation and sensitivity analysis.
-- `DMCS_RMSF_METHOD.md`: detailed scientific definition of the RMSF metric.
-- `DMCS_REPRODUCTION_GUIDE.md`: direct score/ranking reproduction from public processed data and full S1 re-extraction instructions.
-- `DMCS_DATA_PROVENANCE_AUDIT.md`: file inventory and QC summary.
-- `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`: per-system input definitions.
-- `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`: unnormalized mean distances, cluster and energy descriptors.
-- `DMCS_ACTIVE_SITE_RESIDUES.csv`: full per-residue 5.0 Å pocket map.
-- `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`: 4.0/5.0/6.0 Å sensitivity.
-- `DMCS_RESULTS.csv`: raw descriptor matrix.
-- `S2_DMCS_normalization.py`: component normalization and weighted DMCS calculation.
-- `DMCS_STANDARDIZED.csv`: normalized component scores.
-- `S3_DMCS_ranking.py`: final panel validation and ranking.
-- `DMCS_Final_Ranking.csv`: canonical 5.0 Å ranking.
-- `DMCS_Descriptor_Summary.csv`: compact descriptor summary.
-- `requirements.txt`: Python dependencies.
+Dcat is assembled from three distance components: catalytic residue–PLP (0.50), PLP–furfural (0.25) and PLP–IPA (0.25).
 
-## RMSF method
+Distances and catalytic-pocket RMSF are inverse min–max normalized. Dconf is positive min–max normalized from the natural logarithm of the dominant-cluster frame fraction. Dene is positive min–max normalized from the absolute value of signed GB `DELTA TOTAL`. Normalization is performed across the defined 15-enzyme panel.
 
-All 15 systems contain the same protein-only per-residue Cα RMSF output, `rmsf_protein_calpha.dat`, produced by the corresponding `cpptraj.in`. Other RMSF files, including `rmsf_complex_all_byres.dat`, `rmsf_byres_clean.dat` and legacy `active_site_rmsf.dat`, are retained as supplementary analysis records. Drig uses the common protein-only Cα source and a structure-defined pocket.
+## Canonical RMSF/Drig definition
 
-For each prepared ternary structure, a protein residue is included if any of its heavy atoms is within 5.0 Å of any heavy atom in the combined UNP (PLP), UNL (furfural) and UNI (isopropylamine) set. Drig is the arithmetic mean Cα RMSF of the selected residues. This selection is regenerated separately for each structure; no residue numbers are transferred between enzymes. The complete residue list and values are in `DMCS_ACTIVE_SITE_RESIDUES.csv`. Sensitivity at 4.0, 5.0 and 6.0 Å is also provided.
+All 15 systems have a common protein-only per-residue Cα RMSF file, `rmsf_protein_calpha.dat`. For each enzyme separately, protein residues with at least one heavy atom within 5.0 Å of any heavy atom in the prepared PLP (UNP) + furfural (UNL) + IPA (UNI) assembly are selected. Drig is the arithmetic mean of the selected residue-wise Cα RMSF values. Residue numbering is system-specific and is not transferred between enzymes.
 
-## Reproduction
+The full residue map is `DMCS_ACTIVE_SITE_RESIDUES.csv`; the 4.0/5.0/6.0 Å sensitivity analysis is `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`. See [DMCS_RMSF_METHOD.md](DMCS_RMSF_METHOD.md) for the complete procedure.
 
-Install dependencies:
+## Main files
 
-```bash
-python -m pip install -r 04_DMCS_Analysis/requirements.txt
-```
+| File/folder | Purpose |
+|---|---|
+| `S1_INPUTS.csv` | 15-system source manifest: enzyme label, source directory, catalytic residue and distance filename |
+| `S1_descriptor_extraction.py` | Source descriptor extraction, validation, structure-derived pocket map and cutoff sensitivity |
+| `S2_DMCS_normalization.py` | Normalization and weighted score calculation from the raw descriptor table |
+| `S3_DMCS_ranking.py` | Validation and export of the final ranked panel |
+| `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv` | Extracted raw descriptors and provenance fields |
+| `DMCS_ACTIVE_SITE_RESIDUES.csv` | Per-residue canonical 5.0 Å pocket map |
+| `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv` | Common protein Cα RMSF profile for all systems |
+| `DMCS_RMSF_CUTOFF_SENSITIVITY.csv` | 4.0/5.0/6.0 Å sensitivity results |
+| `DMCS_RESULTS.csv` | Raw descriptor matrix supplied to normalization |
+| `DMCS_STANDARDIZED.csv` | Normalized components and DMCS |
+| `DMCS_Final_Ranking.csv` | Final canonical 15-system ranking |
+| `15_Enzyme_Analysis_Data/` | Harmonized per-enzyme processed tables and RMSF data |
+| `15_Enzyme_Analysis_DAT_Files/` | Original collected per-enzyme numerical DAT outputs |
+| `DMCS_DATA_PROVENANCE_AUDIT.md` | Source inventory and quality-control record |
+| `DMCS_REPRODUCTION_GUIDE.md` | Reproduction routes and required files |
+| `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md` | Per-system residue and input-file mapping |
 
-With the 15 analysis directories under `$HOME/amber24`, run:
-
-```bash
-python 04_DMCS_Analysis/S1_descriptor_extraction.py \
-  --analysis-root "$HOME/amber24" \
-  --output-dir 04_DMCS_Analysis \
-  --pocket-cutoff 5.0 \
-  --sensitivity-cutoffs 4,5,6
-python 04_DMCS_Analysis/S2_DMCS_normalization.py
-python 04_DMCS_Analysis/S3_DMCS_ranking.py
-```
-
-S1 validates source files, the protein alignment/RMSF sequence, residue-number mapping, 50,000-frame distance outputs, cluster frame totals, GB/PB rows and production settings before writing tables.
-
-## Current canonical result
-
-The 5.0 Å pocket definition gives ATA117-Rd11 a DMCS score of **0.915409** (rank 1). This supersedes the earlier score produced from heterogeneous legacy RMSF masks. Use the updated score consistently in the manuscript, figures, Supporting Information and repository. The score is a comparative descriptor-based prioritization metric, not a direct activity prediction.
-
-
-## Per-enzyme analysis data
-
-The directory `15_Enzyme_Analysis_Data/` contains one subdirectory for each of the 15 evaluated enzyme systems. Each subdirectory provides the raw descriptor summary, canonical 5.0 Å pocket residue/RMSF table, complete protein Cα RMSF profile, CPPTRAJ-format `rmsf_protein_calpha.dat`, and the 4.0/5.0/6.0 Å cutoff-sensitivity rows. The parent directory README explains the common data contract and pocket definition.
-
-The common protein Cα RMSF values are taken from `rmsf_protein_calpha.dat` in each original system folder. The residue-wise table `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv` now contains only this common source for all systems; it no longer mixes legacy active-site or whole-complex RMSF output files.
-
-## Current canonical DMCS result
-
-Using the 5.0 Å structure-defined catalytic pocket and the locked component weights, ATA117-Rd11 ranks first with DMCS = **0.915409**. The current ranking and 4.0/5.0/6.0 Å sensitivity results are included in the machine-readable outputs. The sensitivity analysis is documented in `DMCS_RMSF_METHOD.md`.
-
-## Canonical 5.0 Å DMCS ranking
+## Canonical 5.0 Å ranking
 
 | Rank | Enzyme | DMCS |
 |---:|---|---:|
@@ -90,13 +61,8 @@ Using the 5.0 Å structure-defined catalytic pocket and the locked component wei
 | 14 | W-188 | 0.216602 |
 | 15 | S-omega-TA | 0.108260 |
 
-These values are reproduced from the 5.0 Å structure-derived active-site RMSF descriptor and the locked descriptor weights. The 4.0/5.0/6.0 Å sensitivity data are provided in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
+This is the canonical ranking for the 5.0 Å structure-derived pocket definition and the weights stated above. It supersedes provisional values calculated using heterogeneous legacy RMSF selections.
 
+## Reproduction boundary
 
-## Complete raw analysis DAT outputs
-
-The dedicated destination for original numerical analysis outputs is:
-
-`04_DMCS_Analysis/15_Enzyme_Analysis_DAT_Files/`
-
-The data package preserves every `.dat` file collected from each of the 15 source analysis folders, organized by source folder. It includes distance descriptor series, protein/complex/ligand RMSF outputs, clustering outputs and UNL-containing MMPBSA results. `DAT_FILE_MANIFEST.csv` records file sizes and SHA256 checksums. Original filenames and file contents are preserved.
+S2 and S3 can be run from the descriptor matrix included in this repository. Full S1 source re-extraction requires the original per-system analysis directories and all files listed in `DMCS_REPRODUCTION_GUIDE.md`; the complete source directories and production trajectories are not included. The repository distinguishes reproducing normalized ranking from deposited descriptors from regenerating descriptors from trajectories/source data.

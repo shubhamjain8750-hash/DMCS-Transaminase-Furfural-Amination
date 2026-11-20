@@ -1,22 +1,27 @@
-# 15-Enzyme Analysis Data
+# Harmonized per-enzyme DMCS data
 
-This directory contains a per-enzyme, machine-readable record of the data used in the harmonized DMCS comparison.
+## Purpose
 
-Each enzyme subdirectory contains:
-- `descriptor_summary.csv`: the catalytic-residue–PLP, PLP–furfural and PLP–isopropylamine mean distances, frame counts, dominant-cluster statistics, and signed GB/PB binding-energy outputs.
-- `active_site_rmsf.csv`: residue-level membership and Cα RMSF values for the canonical 5.0 Å catalytic-pocket definition.
-- `protein_ca_rmsf.csv`: the complete per-residue Cα RMSF series extracted from the common `rmsf_protein_calpha.dat` source.
-- `rmsf_protein_calpha.dat`: a plain-text CPPTRAJ-format rendering of the same per-residue Cα RMSF values.
-- `cutoff_sensitivity.csv`: the system's contribution to the 4.0, 5.0 and 6.0 Å pocket-cutoff sensitivity analysis.
+This directory contains compact, machine-readable per-enzyme outputs used in the canonical 15-system DMCS comparison. It is distinct from `15_Enzyme_Analysis_DAT_Files/`, which preserves original collected source DAT files. This directory contains harmonized tables used for descriptor calculation and audit.
 
-## Harmonized RMSF definition
+Each enzyme folder contains:
 
-The protein backbone is aligned using the common CPPTRAJ protocol, then Cα RMSF is calculated for every protein residue. For each prepared ternary complex, protein residues with at least one heavy atom within 5.0 Å of a heavy atom from PLP (UNP), furfural (UNL) or isopropylamine (UNI) are selected. The active-site RMSF descriptor is the arithmetic mean of their residue-wise Cα RMSF values. Each enzyme's own residue numbering and structure are used; no fixed residue mask is transferred between enzymes.
+| File | Definition |
+|---|---|
+| `descriptor_summary.csv` | Source means, frame counts, cluster statistics, signed GB/PB energies, protein/pocket counts and residue lists |
+| `active_site_rmsf.csv` | Residues selected by the canonical 5.0 Å structure-derived pocket rule, nearest component, minimum distance and Cα RMSF |
+| `protein_ca_rmsf.csv` | Complete protein-only per-residue Cα RMSF profile |
+| `rmsf_protein_calpha.dat` | Plain-text CPPTRAJ-style version of the same Cα RMSF profile |
+| `cutoff_sensitivity.csv` | Per-enzyme scores/ranks and RMSF means at 4.0, 5.0 and 6.0 Å |
 
-## Frame and energy provenance
+## Common pocket rule
 
-All three distance series contain 50,000 frames per system. The dominant conformational cluster is selected by maximum frame count. The first `DELTA TOTAL` row from the UNL-containing MMPBSA output is retained as the GB result; the following PB result is retained separately for traceability.
+For each system, protein residues having at least one heavy atom within 5.0 Å of any heavy atom belonging to PLP (UNP), furfural (UNL) or IPA (UNI) in that system's own prepared `complexN.pdb` are selected. Their Cα RMSF values are read from the common protein-only `rmsf_protein_calpha.dat` output and averaged arithmetically. Each enzyme's own residue identifiers are used.
 
-## Reproduce the complete workflow
+## Frame, cluster and energy conventions
 
-See the parent folder's `S1_descriptor_extraction.py`, `DMCS_RMSF_METHOD.md`, and `DMCS_DATA_PROVENANCE_AUDIT.md`. The full collected per-system `.dat`, `.in`, `.sh`, and `.log` files can be kept as the downloadable source archive alongside these compact tables.
+The three distance series contain 50,000 frames per system. The dominant conformational cluster is the cluster with the highest frame count. The first `DELTA TOTAL` entry from the UNL-containing MMPBSA report is retained as GB and the second as PB. The signed GB value is retained in the raw table; only its absolute magnitude is used for Dene.
+
+## Reproduction
+
+See [DMCS_REPRODUCTION_GUIDE.md](../DMCS_REPRODUCTION_GUIDE.md), [DMCS_RMSF_METHOD.md](../DMCS_RMSF_METHOD.md) and the S1–S3 scripts in the parent directory. S2/S3 reproduce normalization and ranking from the deposited raw descriptor matrix. Re-extracting S1 descriptors requires the original analysis directories described in the reproduction guide.

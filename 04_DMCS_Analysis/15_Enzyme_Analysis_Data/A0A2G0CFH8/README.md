@@ -1,11 +1,15 @@
-# A0A2G0CFH8
+# A0A2G0CFH8 — harmonized DMCS data
 
-The files in this directory are the per-enzyme machine-readable analysis outputs used by the harmonized 15-system DMCS workflow.
+This directory contains compact, processed data for this enzyme in the canonical 15-system DMCS comparison.
 
-- `descriptor_summary.csv`: raw distance means, frame counts, cluster data and signed GB/PB energies.
-- `active_site_rmsf.csv`: 5.0 Å structure-defined catalytic-pocket residue membership, nearest ligand/cofactor and per-residue Cα RMSF.
-- `protein_ca_rmsf.csv`: complete protein Cα RMSF profile from the common CPPTRAJ output.
-- `rmsf_protein_calpha.dat`: CPPTRAJ-style two-column RMSF profile.
-- `cutoff_sensitivity.csv`: DMCS component values and rank/score at 4.0, 5.0 and 6.0 Å pocket cutoffs.
+| File | Contents |
+|---|---|
+| `descriptor_summary.csv` | Raw distance means, frame counts, dominant-cluster information, signed GB/PB energies, protein/pocket sizes and residue lists |
+| `active_site_rmsf.csv` | Residues in the canonical 5.0 Å structure-derived pocket, closest component, minimum distance and mapped Cα RMSF |
+| `protein_ca_rmsf.csv` | Full protein-only per-residue Cα RMSF profile |
+| `rmsf_protein_calpha.dat` | Plain-text two-column version of the protein Cα RMSF profile |
+| `cutoff_sensitivity.csv` | System contribution to the 4.0, 5.0 and 6.0 Å cutoff sensitivity analysis |
 
-The canonical pocket is calculated independently from this enzyme's prepared ternary complex. Its protein residues are selected by a 5.0 Å heavy-atom contact to PLP, furfural or isopropylamine. Residues are mapped by their own Amber/CPPTRAJ numbering.
+The pocket is defined independently from this enzyme's prepared ternary complex: a protein residue is selected when any of its heavy atoms is within 5.0 Å of any heavy atom in PLP (UNP), furfural (UNL) or IPA (UNI). Residue numbers correspond to this system's structure and RMSF profile.
+
+Descriptor definitions, scaling, weighting and reproduction instructions are provided in the parent `04_DMCS_Analysis/` documentation.

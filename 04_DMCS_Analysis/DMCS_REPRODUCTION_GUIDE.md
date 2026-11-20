@@ -1,61 +1,63 @@
 # DMCS reproduction guide
 
-## Repository data layout
+## 1. Reproduce deposited normalized scores and ranking
 
-The machine-readable, processed data for the 15-system DMCS analysis are provided under \`04_DMCS_Analysis/\`. The per-enzyme directory \`15_Enzyme_Analysis_Data/\` contains one directory per evaluated enzyme, with:
-- descriptor summary, including distance means, frame counts, cluster statistics and GB/PB energies;
-- the canonical 5.0 Å catalytic-pocket residue map and residue-wise Cα RMSF values;
-- the complete protein Cα RMSF profile in CSV and CPPTRAJ-style DAT formats;
-- per-enzyme 4.0/5.0/6.0 Å cutoff-sensitivity results.
+This route can be run using files already in the repository. It does not require the original cluster filesystem or production trajectories.
 
-The global source tables are \`DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv\`, \`DMCS_ACTIVE_SITE_RESIDUES.csv\`, \`DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv\`, \`DMCS_RESULTS.csv\` and \`DMCS_RMSF_CUTOFF_SENSITIVITY.csv\`.
+From the repository root, install dependencies and run:
 
-## Reproduce the normalized scores and ranking from the public data
+    python -m pip install -r 04_DMCS_Analysis/requirements.txt
+    python 04_DMCS_Analysis/S2_DMCS_normalization.py
+    python 04_DMCS_Analysis/S3_DMCS_ranking.py
 
-This route uses the complete machine-readable descriptor matrix supplied in the repository and does not require MD trajectories or the original cluster filesystem:
+S2 reads `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`, validates the 15-system panel, applies direction-specific min–max scaling and writes `DMCS_STANDARDIZED.csv`. S3 validates normalized component scores and writes `DMCS_Final_Ranking.csv`.
 
-\`\`\`bash
-python -m pip install -r 04_DMCS_Analysis/requirements.txt
-python 04_DMCS_Analysis/S2_DMCS_normalization.py
-python 04_DMCS_Analysis/S3_DMCS_ranking.py
-\`\`\`
+The canonical 5.0 Å score for ATA117-Rd11 is 0.915409.
 
-S2 reads \`DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv\`, performs the descriptor normalization and calculates Dcat, Drig, Dconf, Dene and DMCS. S3 validates the full 15-system panel and exports \`DMCS_Final_Ranking.csv\`.
+## 2. Re-extract raw descriptors with S1
 
-## Re-extract descriptors from the original analysis directories
+S1 requires the original 15 per-system analysis directories. The full directories and trajectories are not part of the public repository. Make those folders available separately, preserving the directory basenames listed in `S1_INPUTS.csv`.
 
-For a full source-file re-extraction, make the original 15 per-system analysis directories available on the machine running S1. The expected directory names and catalytic distance output names are recorded in \`S1_INPUTS.csv\`. Required per-system inputs include:
-- prepared \`complexN.pdb\`;
-- \`cpptraj.in\`, \`md1.in\`, \`mmpbsa.in\`;
-- \`rmsf_protein_calpha.dat\`;
-- the catalytic-residue–PLP distance series, \`plp_unl.dat\`, \`plp_uni.dat\`;
-- \`dmcs_cluster_summary.dat\`;
-- \`FINAL_RESULTS_UNL_MMPBSA.dat\`.
+Each source directory must contain at minimum: `complexN.pdb` with protein and UNP/UNL/UNI; `cpptraj.in`, `md1.in` and `mmpbsa.in`; `rmsf_protein_calpha.dat`; the catalytic-residue–PLP distance file in `S1_INPUTS.csv`; `plp_unl.dat`; `plp_uni.dat`; `dmcs_cluster_summary.dat`; and `FINAL_RESULTS_UNL_MMPBSA.dat`.
 
-Run:
+Run the following, replacing the example path with the parent directory containing all 15 source folders:
 
-\`\`\`bash
-python 04_DMCS_Analysis/S1_descriptor_extraction.py \\
-  --analysis-root /path/to/parent_of_15_system_folders \\
-  --output-dir 04_DMCS_Analysis \\
-  --pocket-cutoff 5.0 \\
-  --sensitivity-cutoffs 4,5,6
-python 04_DMCS_Analysis/S2_DMCS_normalization.py
-python 04_DMCS_Analysis/S3_DMCS_ranking.py
-\`\`\`
+    python 04_DMCS_Analysis/S1_descriptor_extraction.py \
+      --analysis-root /path/to/parent_of_15_system_folders \
+      --output-dir 04_DMCS_Analysis \
+      --pocket-cutoff 5.0 \
+      --sensitivity-cutoffs 4,5,6
+    python 04_DMCS_Analysis/S2_DMCS_normalization.py
+    python 04_DMCS_Analysis/S3_DMCS_ranking.py
 
-S1 validates the common protein Cα RMSF protocol, residue-number correspondence, structure/ligand heavy-atom inventory, 500 ns production settings, distance-series frame counts, cluster frame totals and GB/PB energy rows before regenerating the machine-readable outputs.
+S1 validates required files, ligand heavy-atom inventory, protein alignment before RMSF, residue-number correspondence, 500 ns production settings, 50,000-frame distance series, cluster totals and GB/PB energy rows.
 
-## Canonical RMSF definition
+## 3. Canonical RMSF definition
 
-For each enzyme, S1 identifies protein residues with at least one heavy atom within 5.0 Å of any PLP, furfural or IPA heavy atom in that enzyme's prepared ternary complex. It maps those structure-specific residues to the protein-only Cα RMSF profile produced after common backbone fitting and averages the residue-wise values. The procedure is structure-derived and uses each enzyme's own residue numbering.
+For each enzyme, protein residues are selected independently from its prepared ternary structure when any protein heavy atom is within 5.0 Å of any heavy atom in PLP, furfural or IPA. Their residue identifiers are mapped to the corresponding values in the common protein-only `rmsf_protein_calpha.dat` profile. The arithmetic mean of selected Cα RMSF values is the Drig input. See `DMCS_RMSF_METHOD.md` for the complete procedure.
 
-The 4.0 and 6.0 Å analyses provide cutoff sensitivity. See \`DMCS_RMSF_METHOD.md\` for the full mathematical and CPPTRAJ definition.
+Do not substitute legacy whole-complex RMSF, ligand RMSF or a manually selected residue mask for this canonical metric.
 
-## DMCS weights
+## 4. DMCS definition
 
-\`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene\`
+    Dcat  = 0.50 * inverse_minmax(catalytic-residue–PLP distance)
+          + 0.25 * inverse_minmax(PLP–furfural distance)
+          + 0.25 * inverse_minmax(PLP–IPA distance)
+    Drig  = inverse_minmax(mean 5.0 Å pocket Cα RMSF)
+    Dconf = minmax(ln(dominant-cluster frame fraction))
+    Dene  = minmax(abs(signed GB DELTA TOTAL))
+    DMCS  = 0.40*Dcat + 0.25*Drig + 0.15*Dconf + 0.20*Dene
 
-Dcat subweights: catalytic-residue–PLP = 0.50, PLP–furfural = 0.25 and PLP–IPA = 0.25.
+All min–max operations are calculated over the same 15-system panel. The score is panel-dependent and is not an absolute biochemical activity prediction.
 
-The canonical 5.0 Å analysis gives ATA117-Rd11 a DMCS score of 0.915409 (rank 1).
+## 5. Outputs to inspect
+
+- `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`
+- `DMCS_ACTIVE_SITE_RESIDUES.csv`
+- `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv`
+- `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`
+- `DMCS_STANDARDIZED.csv`
+- `DMCS_Final_Ranking.csv`
+- `15_Enzyme_Analysis_Data/<enzyme>/`
+
+For provenance and QC interpretation, also read `DMCS_DATA_PROVENANCE_AUDIT.md` and `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`.
