@@ -1,72 +1,37 @@
-# S1: Raw Descriptor Extraction and Compilation
+# S1: Raw descriptor extraction and harmonized catalytic-pocket RMSF
 
-## Purpose and data contract
+S1 reads `S1_INPUTS.csv` and the 15 per-system analysis folders.
 
-S1 reads `S1_INPUTS.csv` and compiles trajectory-derived distance and clustering descriptors from the corresponding system folders. The manifest supplies active-site RMSF and signed GB binding free energy. S1 does not rerun MD, RMSF or MMPBSA calculations.
+## Required source files
 
-Required manifest fields:
-- `Enzyme`: system identifier
-- `Directory`: absolute path or path relative to the analysis root
-- `CatalyticDistanceFile`: catalytic-residue–PLP distance series
-- `RMSF`: mean active-site RMSF (Å)
-- `MMGBSA`: signed GB ΔG (kcal/mol)
-- `RMSF_Status` and `MMGBSA_Status`: descriptor provenance
-- `Notes`: optional source and residue-selection details
+- `complexN.pdb`: prepared ternary structure with UNP (PLP), UNL (furfural) and UNI (isopropylamine).
+- `cpptraj.in`, `md1.in` and `mmpbsa.in`: method and production inputs.
+- `rmsf_protein_calpha.dat`: common protein-only Cα RMSF output.
+- Catalytic-residue–PLP distance file named in `S1_INPUTS.csv`.
+- `plp_unl.dat`, `plp_uni.dat`, `dmcs_cluster_summary.dat`.
+- `FINAL_RESULTS_UNL_MMPBSA.dat`.
 
-The script validates the 15-system panel and checks provenance statuses. It stops by default unless both descriptor statuses are `VERIFIED` for every row. Use `--allow-provisional` only to explicitly regenerate an exploratory matrix while any RMSF values remain under review.
+## RMSF definition
 
-## Required files in each analysis folder
+S1 derives the 5.0 Å catalytic pocket separately from each `complexN.pdb`: protein residues with at least one heavy atom within 5.0 Å of the combined UNP/UNL/UNI heavy-atom set. It retrieves per-residue Cα RMSF by original residue number and averages these values to give Drig's raw input.
 
-- System-specific catalytic-residue–PLP distance output.
-- `plp_unl.dat`: PLP–furfural distance.
-- `plp_uni.dat`: PLP–isopropylamine distance.
-- `dmcs_cluster_summary.dat`: cluster frame counts and fractions.
-- RMSF output and its matching selection input.
-- `FINAL_RESULTS_UNL_MMPBSA.dat`: MMPBSA output for the UNL-containing complex.
+The source `cpptraj.in` performs a protein backbone RMS fit to `md1.rst7` before `atomicfluct`. CPPTRAJ does not align coordinates implicitly inside `atomicfluct`; this preceding fit is essential. Details and sensitivity analysis are in `DMCS_RMSF_METHOD.md`.
 
-## Distance extraction
+## Other descriptors
 
-S1 calculates the arithmetic mean of the second numeric column in each CPPTRAJ distance file. The collected series contain 50,000 frames per descriptor. Check the associated input file for residue and atom selections; catalytic substitutions use the matching residue-specific file. The output retains the legacy column name `Lys_PLP` for compatibility, although the field represents catalytic-residue–PLP distance in every system.
+- Distance means: mean of column 2 for catalytic-residue–PLP, PLP–furfural and PLP–IPA time series. Each file must contain 50,000 frames.
+- Conformational persistence: fraction of the cluster with the greatest frame count; cluster frame counts must sum to 50,000.
+- Energetic stabilization: first `DELTA TOTAL` row in the UNL MMPBSA output (GB); the second row is retained separately as PB. Keep signed GB ΔG in the raw table; use its absolute magnitude only for Dene.
 
-## Clustering
-
-S1 selects the cluster-summary row with the maximum frame count and stores its frame fraction. It does not assume that the first row is the largest cluster.
-
-## RMSF policy
-
-The active-site residue set must be documented for each system. Four systems have multi-residue `active_site_rmsf.dat` files with corresponding CPPTRAJ selection inputs in the collected bundle. Two systems have single-residue active-site RMSF outputs requiring definition review. The remaining systems have residue-wise RMSF data but no corresponding active-site selection in the collected input bundle.
-
-Do not use whole-protein residue-wise RMSF as a substitute for an active-site mean. Establish each active-site selection through structure/sequence alignment and catalytic-pocket context, then record the exact residue IDs and atom selection in the input files and manifest.
-
-## MM/GBSA extraction
-
-Use the first GB `DELTA TOTAL` value for the UNL-containing complex. Do not use the PB `DELTA TOTAL` row that follows. The signed GB ΔG is retained in the manifest; S2 uses its absolute magnitude only for energetic normalization. All 15 GB values in the current manifest were extracted from the corresponding raw MMPBSA output.
-
-## Execution
-
-Set the analysis root to the parent directory containing all system folders:
+## Run
 
 ```bash
-export DMCS_ANALYSIS_ROOT="$HOME/amber24"
+python -m pip install -r 04_DMCS_Analysis/requirements.txt
+python 04_DMCS_Analysis/S1_descriptor_extraction.py \
+  --analysis-root "$HOME/amber24" \
+  --output-dir 04_DMCS_Analysis \
+  --pocket-cutoff 5.0 \
+  --sensitivity-cutoffs 4,5,6
 ```
 
-Standard execution (requires all RMSF and MMGBSA statuses to be VERIFIED):
-
-```bash
-python 04_DMCS_Analysis/S1_descriptor_extraction.py
-```
-
-Exploratory execution while some RMSF statuses remain provisional:
-
-```bash
-python 04_DMCS_Analysis/S1_descriptor_extraction.py --allow-provisional
-```
-
-The exploratory flag does not validate the manifest values. It only permits S1 to compile the current inputs for review.
-
-## Output
-
-S1 writes `DMCS_RESULTS.csv` with:
-`Enzyme, Lys_PLP, PLP_UNL, PLP_UNI, RMSF, ClusterFraction, MMGBSA`.
-
-Proceed to S2 and S3 only when the provenance status is appropriate for the intended analysis. The present published ranking is provisional pending completion of active-site RMSF mapping.
+S1 generates raw source descriptors, the canonical pocket map, cutoff sensitivity, the S2 input matrix and updated score/ranking tables. It stops if source files, residue mappings, frame counts or production/RMSF settings fail validation.
