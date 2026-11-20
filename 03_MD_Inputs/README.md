@@ -41,3 +41,12 @@ Large production trajectories and trajectory output files are not included.
 - Section 2.4: Molecular Dynamics Simulations
 - Section 2.5: MM/GBSA Binding Energy Calculations
 - Supporting Information: Method 1 and Workflows 1-3
+
+
+## 15-system enzyme–ligand complex structures
+
+The dedicated destination for the prepared MD complex structures is:
+
+`03_MD_Inputs/15_Enzyme_MD_Complex_Structures/`
+
+The structure package contains, for each system, the prepared unsolvated enzyme–PLP–furfural–isopropylamine complex (`complexN.pdb`) and the corresponding solvated stage-2 equilibration PDB snapshot. The manifest records the original source filenames, component-residue atom counts and SHA256 checksums. The PDB snapshots support structural inspection; production MD itself is restart-based and also requires the corresponding Amber topology/restart files.
