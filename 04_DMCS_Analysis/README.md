@@ -57,3 +57,14 @@ S1 validates source files, the protein alignment/RMSF sequence, residue-number m
 ## Current canonical result
 
 The 5.0 Å pocket definition gives ATA117-Rd11 a DMCS score of **0.915409** (rank 1). This supersedes the earlier score produced from heterogeneous legacy RMSF masks. Use the updated score consistently in the manuscript, figures, Supporting Information and repository. The score is a comparative descriptor-based prioritization metric, not a direct activity prediction.
+
+
+## Per-enzyme analysis data
+
+The directory `15_Enzyme_Analysis_Data/` contains one subdirectory for each of the 15 evaluated enzyme systems. Each subdirectory provides the raw descriptor summary, canonical 5.0 Å pocket residue/RMSF table, complete protein Cα RMSF profile, CPPTRAJ-format `rmsf_protein_calpha.dat`, and the 4.0/5.0/6.0 Å cutoff-sensitivity rows. The parent directory README explains the common data contract and pocket definition.
+
+The common protein Cα RMSF values are taken from `rmsf_protein_calpha.dat` in each original system folder. The residue-wise table `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv` now contains only this common source for all systems; it no longer mixes legacy active-site or whole-complex RMSF output files.
+
+## Current canonical DMCS result
+
+Using the 5.0 Å structure-defined catalytic pocket and the locked component weights, ATA117-Rd11 ranks first with DMCS = **0.915409**. The current ranking and 4.0/5.0/6.0 Å sensitivity results are included in the machine-readable outputs. The sensitivity analysis is documented in `DMCS_RMSF_METHOD.md`.
