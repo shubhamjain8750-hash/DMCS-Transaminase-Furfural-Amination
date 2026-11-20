@@ -1,0 +1,155 @@
+# ==================================================
+# Complete RMSD / RMSF / H-bond analysis
+# Lys188 Mutant Validation Workflow
+# Protein : residues 1-330
+# UNI      : residue 331
+# UNL      : residue 332
+# UNP(PLP) : residue 333
+# ==================================================
+
+parm solv_complexN.prmtop
+
+trajin md1.nc 1 last 10
+
+# --------------------------------------------------
+# Imaging
+# --------------------------------------------------
+
+autoimage
+center :1-330 mass origin
+
+# --------------------------------------------------
+# Reference structure
+# --------------------------------------------------
+
+reference md1.rst7 parm solv_complexN.prmtop
+
+# Align using protein backbone
+rms reference :1-330@CA,C,N
+
+# ==================================================
+# RMSD
+# ==================================================
+
+# Protein backbone
+rms RMSD_Protein \
+:1-330@CA,C,N \
+reference \
+out rmsd_protein_calpha.dat
+
+# Entire complex
+rms RMSD_Complex \
+(:1-330,UNI,UNL,UNP)&!@H= \
+reference \
+out rmsd_complex_all.dat
+
+# Individual ligands
+
+rms RMSD_UNI \
+:UNI&!@H= \
+reference \
+out rmsd_uni.dat
+
+rms RMSD_UNL \
+:UNL&!@H= \
+reference \
+out rmsd_unl.dat
+
+rms RMSD_UNP \
+:UNP&!@H= \
+reference \
+out rmsd_unp.dat
+
+# All ligands together
+
+rms RMSD_Ligands_All \
+(:UNI,UNL,UNP)&!@H= \
+reference \
+out rmsd_ligands_all.dat
+
+# ==================================================
+# RMSF
+# ==================================================
+
+# Protein
+
+atomicfluct \
+out rmsf_protein_calpha.dat \
+:1-330@CA byres
+
+# Whole complex
+
+atomicfluct \
+out rmsf_complex_all_byres.dat \
+(:1-330,UNI,UNL,UNP)&!@H= byres
+
+# Individual ligands
+
+atomicfluct \
+out rmsf_uni_byatom.dat \
+:UNI&!@H= byatom
+
+atomicfluct \
+out rmsf_unl_byatom.dat \
+:UNL&!@H= byatom
+
+atomicfluct \
+out rmsf_unp_byatom.dat \
+:UNP&!@H= byatom
+
+# All ligands
+
+atomicfluct \
+out rmsf_ligands_all_byatom.dat \
+(:UNI,UNL,UNP)&!@H= byatom
+
+# ==================================================
+# HYDROGEN BONDS
+# ==================================================
+
+# UNI
+
+hbond HB_UNI \
+out hbond_uni.dat \
+avgout hbond_uni_avg.dat \
+donormask (:1-330,:UNI) \
+acceptormask (:1-330,:UNI) \
+nointramol \
+distance 3.5 \
+angle 120
+
+# UNL
+
+hbond HB_UNL \
+out hbond_unl.dat \
+avgout hbond_unl_avg.dat \
+donormask (:1-330,:UNL) \
+acceptormask (:1-330,:UNL) \
+nointramol \
+distance 3.5 \
+angle 120
+
+# UNP (PLP)
+
+hbond HB_UNP \
+out hbond_unp.dat \
+avgout hbond_unp_avg.dat \
+donormask (:1-330,:UNP) \
+acceptormask (:1-330,:UNP) \
+nointramol \
+distance 3.5 \
+angle 120
+
+# Entire catalytic assembly
+
+hbond HB_COMPLEX \
+out hbond_complex_all.dat \
+avgout hbond_complex_all_avg.dat \
+donormask (:1-330,:UNI,:UNL,:UNP) \
+acceptormask (:1-330,:UNI,:UNL,:UNP) \
+nointramol \
+distance 3.5 \
+angle 120
+
+run
+quit
