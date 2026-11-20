@@ -64,3 +64,7 @@ Please cite the associated research article when using this repository. Publicat
 ## Contact
 
 For questions regarding the computational methodology and associated research, please refer to the corresponding authors listed in the manuscript.
+
+## Current 15-system DMCS analysis
+
+The harmonized 5.0 Å structure-derived catalytic-pocket RMSF analysis ranks **ATA117-Rd11** first (DMCS = **0.915409**). The complete 15-system ranking, component scores, residue maps, per-enzyme data and cutoff-sensitivity results are maintained in [`04_DMCS_Analysis/`](04_DMCS_Analysis/README.md).
