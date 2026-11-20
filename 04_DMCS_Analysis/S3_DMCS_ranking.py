@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""S3: Validate and rank the locked 15-system DMCS panel."""
+"""S3: Validate and rank the defined 15-system DMCS analysis panel."""
 
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 INPUT_FILE = HERE / "DMCS_STANDARDIZED.csv"
 OUTPUT_FILE = HERE / "DMCS_Final_Ranking.csv"
-EXCLUDED_SYSTEMS = {"A0A1V0DD42", "A0A2L2XFE1"}
+
 EXPECTED_ENZYMES = {
     "ATA117-Rd11", "A0A2G0CFH8", "Lys-W-TA", "AspC", "AptA",
     "H-188", "G-188", "F-188", "AB-R-ATA", "A0A1B728H4",
@@ -26,15 +26,16 @@ def main():
         raise ValueError("Input is empty or contains missing enzyme identifiers.")
 
     df["Enzyme"] = df["Enzyme"].astype(str).str.strip()
-    df = df.loc[~df["Enzyme"].isin(EXCLUDED_SYSTEMS)].copy()
     if df["Enzyme"].duplicated().any():
         duplicates = df.loc[df["Enzyme"].duplicated(), "Enzyme"].tolist()
         raise ValueError(f"Duplicate enzyme identifiers: {duplicates}")
-    if len(df) != 15 or set(df["Enzyme"]) != EXPECTED_ENZYMES:
+
+    observed = set(df["Enzyme"])
+    if len(df) != 15 or observed != EXPECTED_ENZYMES:
         raise ValueError(
-            "Input must contain the locked 15-system panel. "
-            f"Missing={sorted(EXPECTED_ENZYMES - set(df['Enzyme']))}; "
-            f"unexpected={sorted(set(df['Enzyme']) - EXPECTED_ENZYMES)}"
+            "Input must match the defined 15-system analysis panel. "
+            f"Missing={sorted(EXPECTED_ENZYMES - observed)}; "
+            f"unexpected={sorted(observed - EXPECTED_ENZYMES)}"
         )
 
     numeric = REQUIRED_COLUMNS[1:]
