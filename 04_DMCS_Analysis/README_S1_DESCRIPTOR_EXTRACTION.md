@@ -46,3 +46,10 @@ python 04_DMCS_Analysis/S3_DMCS_ranking.py
 \`\`\`
 
 The currently reported 5.0 Å pocket score for ATA117-Rd11 is 0.915409. The 4.0/5.0/6.0 Å sensitivity table is supplied separately.
+
+
+## Access to source analysis directories
+
+The repository contains all processed S1 descriptors, the per-enzyme data folder, canonical residue maps and the common protein Cα RMSF profiles needed to reproduce the normalization and ranking directly. To re-extract distance, cluster and energy descriptors from the original CPPTRAJ/MMPBSA time-series files, provide the original system directories listed in `S1_INPUTS.csv` through `--analysis-root`. The required source files and their definitions are documented in `DMCS_REPRODUCTION_GUIDE.md` and `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`.
+
+Do not substitute whole-complex RMSF or a legacy residue mask for the canonical protein Cα RMSF plus structure-derived pocket selection.
