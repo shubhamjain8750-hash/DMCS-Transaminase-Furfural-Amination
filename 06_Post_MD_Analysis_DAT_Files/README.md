@@ -50,4 +50,4 @@ The collection passed its file-integrity and classification checks on the comput
 
 Before quantitative cross-system comparison, confirm consistent atom masks, reference structures, surface definitions, donor/acceptor selections, hydrogen-bond geometric cutoffs, trajectory sampling intervals and equilibration windows. A matching file count alone does not establish methodological comparability.
 
-**Repository status:** the corrected collection has passed its computational-server audit. Transfer of the generated files into this GitHub directory and commit to the public repository are the remaining publication steps.
+**Repository status:** the corrected collection, per-system inventory, manifest and QC record are committed to the public `main` branch in commit [945ba04](https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination/commit/945ba04b48d8dca2afc46b4604a927e625d8776e).
