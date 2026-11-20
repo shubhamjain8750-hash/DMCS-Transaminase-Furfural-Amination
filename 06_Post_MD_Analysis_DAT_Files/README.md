@@ -4,7 +4,7 @@
 
 This directory archives per-system post-production molecular-dynamics analysis outputs collected from the 15-enzyme panel. It is a source-output archive, not a harmonized comparative analysis and not an extension of the current DMCS equation.
 
-The canonical DMCS score is calculated only from Dcat, Drig, Dconf and Dene as defined in `04_DMCS_Analysis/`. The RMSD, Rg, SASA and hydrogen-bond series in this directory were **not used as inputs to the deposited DMCS score or ranking**. They must not be described as additional DMCS descriptors or as evidence that the ranking was independently validated by these analyses.
+The canonical DMCS score is calculated only from Dcat, Drig, Dconf and Dene as defined in `../04_DMCS_Analysis/`. The RMSD, Rg, SASA and hydrogen-bond series in this directory were **not used as inputs to the deposited DMCS score or ranking**. They must not be described as additional DMCS descriptors or as evidence that the ranking was independently validated by these analyses.
 
 ## Deposited inventory
 
@@ -31,7 +31,7 @@ The `*_ns` files are alternate time-axis representations of corresponding series
 - **SASA:** the source files distinguish protein, full assembly and protein-plus-one-component masks where available. SASA values depend on the atom selection and surface calculation settings.
 - **Hydrogen bonds:** the time-series files report per-frame counts for UNI, UNL, UNP and the complete assembly where available. The `*_avg.dat` files are separate CPPTRAJ text summaries, not per-frame occupancy time series.
 
-MMPBSA/MMGBSA energy-summary reports are excluded from this directory. They belong to the selected source DAT archive in `04_DMCS_Analysis/15_Enzyme_Analysis_DAT_Files/` and are handled separately in the canonical energetic descriptor workflow.
+MMPBSA/MMGBSA energy-summary reports are excluded from this directory. They belong to the selected source DAT archive in `../04_DMCS_Analysis/15_Enzyme_Analysis_DAT_Files/` and are handled separately in the canonical energetic descriptor workflow.
 
 ## Provenance and integrity files
 
