@@ -4,11 +4,13 @@
 
 This audit records the source-file checks and consistency rules used to build the canonical 15-system DMCS descriptor dataset. The canonical output is the 5.0 Å structure-derived pocket analysis and its 15-system ranking.
 
+The separate post-MD output archive in `06_Post_MD_Analysis_DAT_Files/` is not part of the descriptor matrix audited here and is not used in the DMCS equation. Its independent collection/QC record is `06_Post_MD_Analysis_DAT_Files/POST_MD_COLLECTION_QC.md`.
+
 ## Source inventory
 
 The supplied source archive was inspected across 15 enzyme analysis directories. Each system contained the common protein-only `rmsf_protein_calpha.dat` and a CPPTRAJ input. Whole-complex RMSF outputs, `rmsf_byres_clean.dat` in a subset, and separately named `active_site_rmsf.dat` outputs in a subset were also found. These differently defined legacy files are retained as provenance records but are not mixed into the canonical cross-system Drig descriptor.
 
-The public repository contains the 15-system prepared PDB structures and stage-2 PDB snapshots; collected per-system DAT files and their SHA256 manifest; harmonized raw descriptor matrix, pocket residue map, RMSF profiles, normalized values and ranking; and S1–S3 scripts and method documentation.
+The public repository contains the 15-system prepared PDB structures and stage-2 PDB snapshots; selected per-system source DAT files and their SHA256 manifest; harmonized raw descriptor matrix, pocket residue map, RMSF profiles, normalized values and ranking; and S1–S3 scripts and method documentation.
 
 The complete original per-system analysis directories, production trajectory files and binary AMBER restart/topology files are not included. Full S1 extraction from original source folders therefore requires a separate copy of those source directories.
 
@@ -24,7 +26,7 @@ The prepared `complexN.pdb` structures contain UNP (PLP), UNL (furfural) and UNI
 
 The full residue membership, minimum distances and mapped RMSF values are in `DMCS_ACTIVE_SITE_RESIDUES.csv`. The 4.0, 5.0 and 6.0 Å cutoff sensitivity results are in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
 
-## Other descriptor provenance
+## Other canonical descriptor provenance
 
 - Catalytic-residue–PLP, PLP–furfural and PLP–IPA distance descriptors are means of their respective CPPTRAJ time series. Each of the 45 inspected series contains 50,000 frames.
 - The dominant cluster is selected by maximum frame count in `dmcs_cluster_summary.dat`; source cluster frame totals sum to 50,000 per system.
@@ -41,6 +43,7 @@ Dcat subweights: catalytic-residue–PLP 0.50, PLP–furfural 0.25 and PLP–IPA
 - S2 normalization and S3 ranking can be run from the checked-in raw descriptor matrix.
 - S1 is provided for independent source-data extraction, but requires the original per-system analysis folders specified in `S1_INPUTS.csv`.
 - The repository does not include production trajectories and cannot reproduce a new MD trajectory from PDB snapshots alone.
+- Directory 06 separately archives post-MD RMSD, Rg, SASA and hydrogen-bond series. These files are not inputs to the canonical S1–S3 score calculation.
 
 ## Quality-control summary
 
@@ -54,6 +57,8 @@ Dcat subweights: catalytic-residue–PLP 0.50, PLP–furfural 0.25 and PLP–IPA
 - [x] 4.0/5.0/6.0 Å cutoff sensitivity calculated.
 - [x] Raw descriptors, normalized scores and final ranking generated.
 
+The separate directory 06 collection audit is documented in `06_Post_MD_Analysis_DAT_Files/POST_MD_COLLECTION_QC.md`; its file-integrity results must not be interpreted as validation of all cross-system analysis parameters.
+
 ## Interpretation and limitations
 
-The score is a relative prioritization metric over this specific panel and descriptor set. It is not an absolute estimate of catalytic rate, substrate conversion or experimentally measured binding affinity. Missing RMSD, Rg, SASA or hydrogen-bond result files are not treated as zeros and are not claimed as deposited analyses.
+The score is a relative prioritization metric over this specific panel and descriptor set. It is not an absolute estimate of catalytic rate, substrate conversion or experimentally measured binding affinity. The canonical DMCS score uses the four descriptors defined above; the ancillary RMSD, Rg, SASA and hydrogen-bond outputs are not included in the current score. Missing or uncollected outputs are never assigned zero values.
