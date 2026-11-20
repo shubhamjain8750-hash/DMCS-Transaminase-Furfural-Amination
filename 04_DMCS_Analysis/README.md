@@ -2,44 +2,43 @@
 
 ## Overview
 
-This directory contains the S1–S3 computational workflow for descriptor-based evaluation and prioritization of 15 PLP-dependent transaminase systems involved in furfural amination.
+This directory contains the S1–S3 workflow for the comparative evaluation of 15 PLP-dependent transaminase systems involved in furfural amination.
 
-The analysis is organized into three stages:
-
+The workflow is organized into:
 1. **S1 – Raw descriptor extraction and compilation**
-2. **S2 – Descriptor normalization and composite DMCS calculation**
-3. **S3 – Final ranking and comparative summary generation**
+2. **S2 – Descriptor normalization and DMCS calculation**
+3. **S3 – Comparative ranking and summary generation**
 
-The DMCS implementation is a weighted descriptor-normalization and ranking framework. It is **not a trained predictive machine-learning model**.
+DMCS is a weighted descriptor-normalization and ranking framework; it is not a trained predictive machine-learning model.
 
 ## Repository contents
 
 | File | Purpose |
 |---|---|
-| `S1_INPUTS.csv` | 15-system manifest with analysis paths, catalytic distance filenames, RMSF/MMGBSA values and provenance statuses |
-| `S1_descriptor_extraction.py` | Extracts CPPTRAJ distances and largest-cluster fraction; compiles supplied RMSF and MMGBSA |
-| `README_S1_DESCRIPTOR_EXTRACTION.md` | S1 data contract, extraction details and execution instructions |
-| `README_DATA_PROVENANCE.md` | Meaning of manifest provenance fields |
-| `DMCS_DATA_PROVENANCE_AUDIT.md` | System-by-system data-quality findings and closure checklist |
-| `DMCS_RESULTS.csv` | Current raw descriptor table used by S2 |
-| `S2_DMCS_normalization.py` | Normalizes descriptors and calculates Dcat, Drig, Dconf, Dene and DMCS |
-| `DMCS_STANDARDIZED.csv` | Current normalized descriptor table |
-| `S3_DMCS_ranking.py` | Validates and ranks the 15 systems |
-| `DMCS_Final_Ranking.csv` | Current ranked output |
+| `S1_INPUTS.csv` | 15-system manifest, including raw-data paths and RMSF/MMGBSA provenance statuses |
+| `S1_descriptor_extraction.py` | Extracts distance and largest-cluster descriptors; compiles the manifest RMSF and GB-energy values |
+| `README_S1_DESCRIPTOR_EXTRACTION.md` | S1 data contract and execution guide |
+| `README_DATA_PROVENANCE.md` | Explanation of descriptor provenance fields |
+| `DMCS_DATA_PROVENANCE_AUDIT.md` | Raw-data validation findings and reproducibility checklist |
+| `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv` | Exact distance means, frame counts, cluster metrics and GB/PB energy values parsed from the uploaded system outputs |
+| `DMCS_15_SYSTEM_RMSF_PER_RESIDUE.csv` | Residue-wise RMSF output retained for active-site mapping and audit |
+| `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md` | Consolidated system-specific CPPTRAJ, RMSF, MD and MMPBSA inputs |
+| `DMCS_RESULTS.csv` | S1-compatible raw descriptor matrix |
+| `DMCS_Descriptor_Summary.csv` | Compact raw descriptor summary |
+| `S2_DMCS_normalization.py` | Calculates normalized component scores and composite DMCS |
+| `DMCS_STANDARDIZED.csv` | Normalized descriptor table |
+| `S3_DMCS_ranking.py` | Validates and sorts the 15-system panel |
+| `DMCS_Final_Ranking.csv` | Current provisional ranked output |
 
-## Locked analysis panel
+## Analysis panel
 
-The 15 retained systems are:
+The 15 evaluated systems are:
 
 ATA117-Rd11, A0A2G0CFH8, Lys-W-TA, AspC, AptA, H-188, G-188, F-188, AB-R-ATA, A0A1B728H4, A0A1Z5HPJ6, S-omega-TA, S-188, CV-TAm and W-188.
 
-Excluded systems: A0A1V0DD42 and A0A2L2XFE1.
-
-For ATA117-Rd11, use the selected rerun folder `ATA-117-rd11_rerun_500ns`; do not use the older `rd11-500nss` run.
+For ATA117-Rd11, the selected production analysis folder is `ATA-117-rd11_rerun_500ns`.
 
 ## DMCS scoring definition
-
-Outer component weights:
 
 | Component | Definition | Weight |
 |---|---|---:|
@@ -48,35 +47,35 @@ Outer component weights:
 | Dconf | Conformational persistence | 0.15 |
 | Dene | Energetic stabilization | 0.20 |
 
-Catalytic subweights:
+Catalytic-readiness subweights:
 
-| Descriptor | Definition | Subweight |
-|---|---|---:|
-| Catalytic residue–PLP | Catalytic residue–PLP distance | 0.50 |
-| PLP–UNL | PLP–furfural distance | 0.25 |
-| PLP–UNI | PLP–isopropylamine distance | 0.25 |
+| Descriptor | Weight |
+|---|---:|
+| Catalytic-residue–PLP distance | 0.50 |
+| PLP–furfural distance | 0.25 |
+| PLP–isopropylamine distance | 0.25 |
 
-S2 applies inverse min–max normalization to distance descriptors and RMSF. It applies positive min–max normalization to ln(largest-cluster fraction) and to the absolute magnitude of signed GB ΔG. The composite score is:
+S2 uses inverse min–max normalization for distance descriptors and RMSF, and positive min–max normalization for the logarithm of the largest-cluster fraction and the absolute magnitude of signed GB ΔG.
 
-**DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene**
+`DMCS = 0.40 Dcat + 0.25 Drig + 0.15 Dconf + 0.20 Dene`
 
-The legacy raw-distance column name `Lys_PLP` is retained for code compatibility; chemically, it represents catalytic-residue–PLP distance for all systems, including the Lys188 substitutions.
+The legacy column name `Lys_PLP` is retained for code compatibility. Chemically, it represents the catalytic-residue–PLP distance for every system.
 
 ## Execution
 
-Install dependencies:
+Install the Python dependencies:
 
 ```bash
 pip install numpy pandas
 ```
 
-Set the path containing the 15 analysis directories:
+Set the analysis root (the parent directory containing the 15 system folders):
 
 ```bash
 export DMCS_ANALYSIS_ROOT="$HOME/amber24"
 ```
 
-Run in order:
+Run the scripts in sequence:
 
 ```bash
 python 04_DMCS_Analysis/S1_descriptor_extraction.py
@@ -84,22 +83,22 @@ python 04_DMCS_Analysis/S2_DMCS_normalization.py
 python 04_DMCS_Analysis/S3_DMCS_ranking.py
 ```
 
-**Important:** S1 now requires both RMSF_Status and MMGBSA_Status to be `VERIFIED` for every system. Until the provenance audit is complete, exploratory output requires an explicit override:
+S1 requires `RMSF_Status` and `MMGBSA_Status` to be `VERIFIED` for every row by default. While RMSF mapping remains under review, an exploratory compilation can be explicitly requested with:
 
 ```bash
 python 04_DMCS_Analysis/S1_descriptor_extraction.py --allow-provisional
 ```
 
-The override allows exploratory compilation only. It does not make provisional values verified.
+This override does not promote provisional values to verified values.
 
-## Current ranking — provisional pending provenance audit
+## Current provisional ranking
 
-The currently committed ranking is arithmetically consistent with the committed DMCS_RESULTS.csv and current S2 formula. However, several RMSF selections/values and MM/GBSA source values still require raw-file verification. Therefore, the table below is retained as the **current provisional ranking**, not as a provenance-closed final ranking.
+The current ranking was recalculated using exact mean distances, largest-cluster fractions and the first GB `DELTA TOTAL` values extracted from the uploaded raw outputs. Historical RMSF values are retained where the archive did not contain a system-specific active-site selection, and two available RMSF selections contain only a single residue. Therefore, the numerical ranking is **provisional pending completion of consistent active-site RMSF mapping**.
 
 | Rank | Enzyme | DMCS |
 |---:|---|---:|
 | 1 | ATA117-Rd11 | 0.9063 |
-| 2 | A0A2G0CFH8 | 0.8531 |
+| 2 | A0A2G0CFH8 | 0.8532 |
 | 3 | Lys-W-TA | 0.6291 |
 | 4 | AspC | 0.5955 |
 | 5 | AptA | 0.5800 |
@@ -111,15 +110,11 @@ The currently committed ranking is arithmetically consistent with the committed 
 | 11 | A0A1Z5HPJ6 | 0.3821 |
 | 12 | S-omega-TA | 0.3562 |
 | 13 | S-188 | 0.3091 |
-| 14 | CV-TAm | 0.2248 |
+| 14 | CV-TAm | 0.2247 |
 | 15 | W-188 | 0.1651 |
 
-Do not mix the current 0.9063 score with the earlier 0.8394 score from a previous DMCS version/run.
+## Data handling
 
-## Reproducibility and data handling
+The raw descriptor table retains 50,000-frame distance-series statistics, largest-cluster frame counts/fractions and signed GB/PB energy values. The residue-wise RMSF table preserves the data needed to audit active-site selections. Production trajectory files are not included.
 
-S1 compiles existing CPPTRAJ outputs and manifest-supplied RMSF/MMGBSA values; it does not regenerate MD, RMSF, clustering or MM/GBSA calculations. Retain the corresponding system-specific CPPTRAJ inputs, distance time series, cluster summaries, RMSF masks/raw outputs and MMPBSA outputs.
-
-Do not upload large NetCDF trajectories or bulky topology/coordinate files. Keep compact inputs, outputs, scripts, manifests and provenance records in version control; document external storage and checksums separately.
-
-Complete the checklist in `DMCS_DATA_PROVENANCE_AUDIT.md` before freezing manuscript-reported DMCS scores.
+Complete the checks in `DMCS_DATA_PROVENANCE_AUDIT.md` before treating manuscript-reported scores as provenance-closed final values.
