@@ -15,6 +15,7 @@ The workflow combines sequential molecular docking, molecular-dynamics simulatio
 | [03_MD_Inputs](03_MD_Inputs/) | MD preparation/production and trajectory analysis inputs | AMBER input examples, CPPTRAJ templates and 30 PDB structures |
 | [04_DMCS_Analysis](04_DMCS_Analysis/) | Canonical DMCS analysis | Raw/normalized tables, scripts, per-enzyme summaries, collected DAT outputs and provenance documentation |
 | [05_Computational_Environment](05_Computational_Environment/) | Software and execution environment | Environment notes and Python dependency pointer |
+| [06_Post_MD_Analysis_DAT_Files](06_Post_MD_Analysis_DAT_Files/) | Extended post-production analysis outputs | RMSD, Rg, SASA and hydrogen-bond time-series data; collection is undergoing final classification/QC |
 
 ## DMCS model
 
@@ -41,10 +42,10 @@ Using the harmonized 5.0 Å structure-derived pocket definition, **ATA117-Rd11 r
 - 199 collected numerical DAT outputs, including RMSF, catalytic distance, clustering and MMPBSA outputs where present.
 - Harmonized per-enzyme DMCS descriptors, pocket residue maps, normalization/ranking scripts and audit documentation.
 
-### Not included
+### Not included / pending
 - Production MD trajectories and the complete set of binary AMBER restart/topology files.
 - Complete per-enzyme docking pose/PDBQT/configuration packages.
-- A complete set of post-MD result series for RMSD, radius of gyration, SASA and hydrogen-bond occupancy. Analysis input templates are supplied, but these corresponding result DAT files are not part of the current public data package.
+- A fully validated, cross-system set of post-MD RMSD, Rg, SASA and hydrogen-bond result files. A preliminary 690-file collection passed byte-integrity checks, but the audit identified 45 MMPBSA summary reports incorrectly classified as SASA. That preliminary collection is not the publication dataset. The corrected collection must explicitly exclude MMPBSA/MMGBSA reports and be re-audited before deposit. See [06_Post_MD_Analysis_DAT_Files/README.md](06_Post_MD_Analysis_DAT_Files/README.md).
 - Experimental chromatograms, HPLC data or supplementary figure files.
 
 The absence of a result file must not be interpreted as a zero value or a failed analysis. Only analyses represented by deposited output files should be described as deposited results.
