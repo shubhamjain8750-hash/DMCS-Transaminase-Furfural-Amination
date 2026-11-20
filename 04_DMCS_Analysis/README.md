@@ -91,3 +91,12 @@ Using the 5.0 Å structure-defined catalytic pocket and the locked component wei
 | 15 | S-omega-TA | 0.108260 |
 
 These values are reproduced from the 5.0 Å structure-derived active-site RMSF descriptor and the locked descriptor weights. The 4.0/5.0/6.0 Å sensitivity data are provided in `DMCS_RMSF_CUTOFF_SENSITIVITY.csv`.
+
+
+## Complete raw analysis DAT outputs
+
+The dedicated destination for original numerical analysis outputs is:
+
+`04_DMCS_Analysis/15_Enzyme_Analysis_DAT_Files/`
+
+The data package preserves every `.dat` file collected from each of the 15 source analysis folders, organized by source folder. It includes distance descriptor series, protein/complex/ligand RMSF outputs, clustering outputs and UNL-containing MMPBSA results. `DAT_FILE_MANIFEST.csv` records file sizes and SHA256 checksums. Original filenames and file contents are preserved.
