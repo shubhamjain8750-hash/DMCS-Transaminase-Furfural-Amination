@@ -47,11 +47,11 @@ The 15-system DMCS analysis and its supporting inputs are documented in `04_DMCS
 
 The repository provides the S1–S3 analysis scripts, machine-readable descriptor data, the per-enzyme data directory (`04_DMCS_Analysis/15_Enzyme_Analysis_Data/`), system-specific analysis inputs, and the source tables used to inspect distance, clustering, RMSF and MM/GBSA descriptors. Molecular-dynamics trajectory files are not included.
 
-The current composite ranking is documented as provisional until the system-specific active-site RMSF mapping is complete and consistently verified. See `04_DMCS_Analysis/DMCS_DATA_PROVENANCE_AUDIT.md`.
+The canonical rigidity descriptor is generated for all 15 systems from the common protein-only Cα RMSF output and a structure-derived 5.0 Å catalytic-pocket definition. The residue mapping, per-system source tables and 4.0/5.0/6.0 Å sensitivity analysis are documented in `04_DMCS_Analysis/`.
 
 ## Data and Software Availability
 
-The computational scripts, machine-readable descriptor datasets, system-specific DMCS analysis inputs and supporting reproducibility documentation are publicly available in this GitHub repository:
+The computational scripts, machine-readable descriptor datasets, per-enzyme analysis outputs for all 15 systems, structure-derived catalytic-pocket RMSF maps, system-specific analysis inputs and supporting reproducibility documentation are publicly available in this GitHub repository:
 
 https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination
 
