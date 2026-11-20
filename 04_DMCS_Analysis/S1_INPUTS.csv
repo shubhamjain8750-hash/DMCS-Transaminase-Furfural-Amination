@@ -1,16 +1,16 @@
-Enzyme,Directory,CatalyticDistanceFile,RMSF,MMGBSA,RMSF_Status,MMGBSA_Status,Notes
-ATA117-Rd11,ATA-117-rd11_rerun_500ns,lys_plp.dat,1.476733333,-12.4786,VERIFIED,VERIFIED,"Six active-site residues: 106,115,142,188,231,249; mean recalculated from active_site_rmsf.dat"
-A0A2G0CFH8,A0A2G0CFH8-500ns,lys_plp.dat,1.085316667,-10.7102,VERIFIED,VERIFIED,"Eighteen active-site residues; mean recalculated from active_site_rmsf.dat"
-Lys-W-TA,Lys-W-TA-500ns,lys_plp.dat,0.7051,-6.0546,SINGLE_RESIDUE_ONLY_REQUIRES_REVIEW,VERIFIED,"Only residue 136 appears in active_site_rmsf.dat; retain provisionally pending definition review"
-AspC,AspC-500ns,lys_plp.dat,1.560672727,-1.6362,VERIFIED,VERIFIED,"Eleven active-site residues; mean recalculated from active_site_rmsf.dat"
-AptA,AptA500ns,lys_plp.dat,1.817763636,-4.9097,VERIFIED,VERIFIED,"Eleven active-site residues; mean recalculated from active_site_rmsf.dat"
-H-188,H-188-500ns,his_plp.dat,11.787,-2.3593,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-G-188,G-188-500ns,gly_plp.dat,15.5716,-4.4999,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-F-188,F-188-500ns,phe_plp.dat,14.0009,-2.9229,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-AB-R-ATA,AB-R-ATA,lys_plp.dat,13.5967,-4.3682,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-A0A1B728H4,A0A1B728H4-500ns,lys_plp.dat,16.785,-2.5517,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-A0A1Z5HPJ6,A0A1Z5HPJ6-500ns,lys_plp.dat,17.776,-2.8285,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-S-omega-TA,S-omega-TA-500ns,lys_plp.dat,0.8765,-3.6800,SINGLE_RESIDUE_ONLY_REQUIRES_REVIEW,VERIFIED,"Only protein residue 288 appears in active_site_rmsf.dat; input mask also includes non-protein residue IDs"
-S-188,S-188-500ns,ser_plp.dat,15.925,-1.4231,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-CV-TAm,CV-tam,lys_plp.dat,21.046,-2.9028,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
-W-188,W-188-500ns,trp_plp.dat,21.8127,-3.9323,UNVERIFIED_HISTORICAL_VALUE,VERIFIED,"Residue-wise RMSF is supplied; active-site selection is not supplied in the collected inputs"
+Enzyme,Directory,Catalytic_Residue,CatalyticDistanceFile
+ATA117-Rd11,ATA-117-rd11_rerun_500ns,Lys188,lys_plp.dat
+A0A2G0CFH8,A0A2G0CFH8-500ns,Lys240,lys_plp.dat
+Lys-W-TA,Lys-W-TA-500ns,Lys136,lys_plp.dat
+AspC,AspC-500ns,Lys234,lys_plp.dat
+AptA,AptA500ns,Lys281,lys_plp.dat
+H-188,H-188-500ns,His188,his_plp.dat
+G-188,G-188-500ns,Gly188,gly_plp.dat
+F-188,F-188-500ns,Phe188,phe_plp.dat
+AB-R-ATA,AB-R-ATA,Lys180,lys_plp.dat
+A0A1B728H4,A0A1B728H4-500ns,Lys147,lys_plp.dat
+A0A1Z5HPJ6,A0A1Z5HPJ6-500ns,Lys140,lys_plp.dat
+S-omega-TA,S-omega-TA-500ns,Lys288,lys_plp.dat
+S-188,S-188-500ns,Ser188,ser_plp.dat
+CV-TAm,CV-tam,Lys288,lys_plp.dat
+W-188,W-188-500ns,Trp188,trp_plp.dat
