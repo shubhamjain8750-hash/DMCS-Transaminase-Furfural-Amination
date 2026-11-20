@@ -15,7 +15,7 @@ The workflow combines sequential molecular docking, molecular-dynamics simulatio
 | [03_MD_Inputs](03_MD_Inputs/) | MD preparation/production and trajectory analysis inputs | AMBER input examples, CPPTRAJ templates and 30 PDB structures |
 | [04_DMCS_Analysis](04_DMCS_Analysis/) | Canonical DMCS analysis | Raw/normalized tables, scripts, per-enzyme summaries, collected DAT outputs and provenance documentation |
 | [05_Computational_Environment](05_Computational_Environment/) | Software and execution environment | Environment notes and Python dependency pointer |
-| [06_Post_MD_Analysis_DAT_Files](06_Post_MD_Analysis_DAT_Files/) | Extended post-production analysis outputs | RMSD, Rg, SASA and hydrogen-bond time-series data; collection is undergoing final classification/QC |
+| [06_Post_MD_Analysis_DAT_Files](06_Post_MD_Analysis_DAT_Files/) | Extended post-production analysis outputs | 645 DAT files and 585 CSV conversions across RMSD, Rg, SASA and hydrogen-bond categories; source-checksum audit passed, repository transfer pending |
 
 ## DMCS model
 
@@ -39,16 +39,16 @@ Using the harmonized 5.0 Å structure-derived pocket definition, **ATA117-Rd11 r
 - AMBER minimization, heating, density/equilibration and production input examples.
 - CPPTRAJ input examples for RMSD/RMSF/hydrogen-bond and Rg/SASA calculations.
 - Prepared unsolvated enzyme–PLP–furfural–IPA structures and solvated stage-2 PDB snapshots for 15 systems.
-- 199 collected numerical DAT outputs, including RMSF, catalytic distance, clustering and MMPBSA outputs where present.
+- 199 previously collected numerical DAT outputs, including RMSF, catalytic distance, clustering and MMPBSA outputs where present.
 - Harmonized per-enzyme DMCS descriptors, pocket residue maps, normalization/ranking scripts and audit documentation.
+- A corrected 15-system post-MD collection prepared for `06_Post_MD_Analysis_DAT_Files/`: 645 original DAT files (165 RMSD, 150 Rg, 150 SASA and 180 hydrogen-bond outputs) plus 585 CSV conversions. All 645 copied DAT files passed SHA256 source comparison; no missing files, mismatches, duplicate-content groups or irregular numeric rows were reported. No MMPBSA/MMGBSA reports were included. The corrected files are staged on the computational server and await transfer/commit to this repository.
 
-### Not included / pending
+### Not included
 - Production MD trajectories and the complete set of binary AMBER restart/topology files.
 - Complete per-enzyme docking pose/PDBQT/configuration packages.
-- A fully validated, cross-system set of post-MD RMSD, Rg, SASA and hydrogen-bond result files. A preliminary 690-file collection passed byte-integrity checks, but the audit identified 45 MMPBSA summary reports incorrectly classified as SASA. That preliminary collection is not the publication dataset. The corrected collection must explicitly exclude MMPBSA/MMGBSA reports and be re-audited before deposit. See [06_Post_MD_Analysis_DAT_Files/README.md](06_Post_MD_Analysis_DAT_Files/README.md).
 - Experimental chromatograms, HPLC data or supplementary figure files.
 
-The absence of a result file must not be interpreted as a zero value or a failed analysis. Only analyses represented by deposited output files should be described as deposited results.
+The post-MD file audit confirms copy integrity and category counts; it does not by itself establish that all systems used identical atom selections, reference structures, surface definitions or hydrogen-bond geometric criteria. Those methodological details should be checked before quantitative cross-system comparisons. The absence of a result file must not be interpreted as a zero value or a failed analysis.
 
 ## Reproducibility
 
