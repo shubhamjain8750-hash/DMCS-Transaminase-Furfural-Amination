@@ -15,7 +15,7 @@ The workflow combines sequential molecular docking, molecular-dynamics simulatio
 | [03_MD_Inputs](03_MD_Inputs/) | MD preparation/production and trajectory analysis inputs | AMBER input examples, CPPTRAJ templates and 30 PDB structures |
 | [04_DMCS_Analysis](04_DMCS_Analysis/) | Canonical DMCS analysis | Raw/normalized tables, scripts, per-enzyme summaries, collected DAT outputs and provenance documentation |
 | [05_Computational_Environment](05_Computational_Environment/) | Software and execution environment | Environment notes and Python dependency pointer |
-| [06_Post_MD_Analysis_DAT_Files](06_Post_MD_Analysis_DAT_Files/) | Extended post-production analysis outputs | 645 DAT files and 585 CSV conversions across RMSD, Rg, SASA and hydrogen-bond categories; source-checksum audit passed, repository transfer pending |
+| [06_Post_MD_Analysis_DAT_Files](06_Post_MD_Analysis_DAT_Files/) | Extended post-production analysis outputs | 645 DAT files and 585 CSV conversions across RMSD, Rg, SASA and hydrogen-bond categories; deposited on `main` and checksum-audited |
 
 ## DMCS model
 
@@ -41,7 +41,7 @@ Using the harmonized 5.0 Å structure-derived pocket definition, **ATA117-Rd11 r
 - Prepared unsolvated enzyme–PLP–furfural–IPA structures and solvated stage-2 PDB snapshots for 15 systems.
 - 199 previously collected numerical DAT outputs, including RMSF, catalytic distance, clustering and MMPBSA outputs where present.
 - Harmonized per-enzyme DMCS descriptors, pocket residue maps, normalization/ranking scripts and audit documentation.
-- A corrected 15-system post-MD collection prepared for `06_Post_MD_Analysis_DAT_Files/`: 645 original DAT files (165 RMSD, 150 Rg, 150 SASA and 180 hydrogen-bond outputs) plus 585 CSV conversions. All 645 copied DAT files passed SHA256 source comparison; no missing files, mismatches, duplicate-content groups or irregular numeric rows were reported. No MMPBSA/MMGBSA reports were included. The corrected files are staged on the computational server and await transfer/commit to this repository.
+- The corrected 15-system post-MD dataset in `06_Post_MD_Analysis_DAT_Files/`: 645 original DAT files (165 RMSD, 150 Rg, 150 SASA and 180 hydrogen-bond outputs) plus 585 CSV conversions. All 645 copied DAT files passed SHA256 source comparison; there were no missing files, mismatches, duplicate-content groups or irregular numeric rows, and no MMPBSA/MMGBSA reports were included. The dataset and its manifest, system inventory and QC record were pushed to the `main` branch in commit [945ba04](https://github.com/shubhamjain8750-hash/DMCS-Transaminase-Furfural-Amination/commit/945ba04b48d8dca2afc46b4604a927e625d8776e).
 
 ### Not included
 - Production MD trajectories and the complete set of binary AMBER restart/topology files.
