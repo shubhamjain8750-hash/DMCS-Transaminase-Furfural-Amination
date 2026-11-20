@@ -77,3 +77,10 @@ Outer weights: Dcat 0.40, Drig 0.25, Dconf 0.15, Dene 0.20. Dcat subweights: cat
 - [x] Raw, normalized and ranked DMCS tables regenerated.
 
 Production trajectories are not included. The public repository provides compact machine-readable descriptors, the residue-level pocket map, system-specific method inputs and scripts needed to reproduce the descriptor-level analysis.
+
+
+## Organized per-enzyme dataset
+
+All 15 systems now have a dedicated subdirectory in `15_Enzyme_Analysis_Data/`. Each folder contains the system's descriptor summary, active-site residue/RMSF map, full protein Cα RMSF series in CSV and CPPTRAJ-style DAT format, and cutoff-sensitivity results. These per-system files are generated from the same source tables used by the S1 workflow and preserve enzyme-specific residue numbering.
+
+The previous mixed-source RMSF table has been replaced by the uniform `rmsf_protein_calpha.dat` source for every system. The individual legacy `active_site_rmsf.dat`, `rmsf_byres_clean.dat` and `rmsf_complex_all_byres.dat` records remain documented as supplementary analysis outputs; they are not mixed into the canonical cross-system Drig descriptor.
