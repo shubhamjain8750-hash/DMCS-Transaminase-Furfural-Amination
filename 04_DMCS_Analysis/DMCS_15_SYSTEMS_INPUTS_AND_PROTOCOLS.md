@@ -998,3 +998,1581 @@ echo "DONE"
 - `rmsf_ligands_all_byatom.dat`
 - `rmsf_protein_calpha.dat`
 - `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### G-188
+
+Source folder: `G-188-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_G188_nowat.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin solv_complexN_md1_no_water.crd
+trajout G188_nowat.nc netcdf
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_G188.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin G188_nowat.nc
+
+distance gly_plp :188@CA :333@C4 out gly_plp.dat
+distance plp_unl :333@C4 :332@C4 out plp_unl.dat
+distance plp_uni :333@C4 :331@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_v2.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin G188_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-331",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `gly_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### F-188
+
+Source folder: `F-188-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_F188_nowat.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin solv_complexN_md1_no_water.crd
+trajout F188_nowat.nc netcdf
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_F188.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin F188_nowat.nc
+
+distance phe_plp :188@CB :333@C4 out phe_plp.dat
+distance plp_unl :333@C4 :332@C4 out plp_unl.dat
+distance plp_uni :333@C4 :331@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_v2.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin F188_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-331",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `phe_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### AB-R-ATA
+
+Source folder: `AB-R-ATA`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_ABRATA_nowat.in**
+
+```text
+parm solv_complexN.prmtop
+trajin md1.nc
+
+autoimage
+strip :WAT,Na+,Cl-
+
+trajout ABRATA_nowat.nc netcdf
+
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_ABRATA.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin ABRATA_nowat.nc
+
+distance lys_plp :180@NZ :328@C4 out lys_plp.dat
+distance plp_unl :328@C4 :327@C4 out plp_unl.dat
+distance plp_uni :328@C4 :326@C  out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_ABRATA.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin ABRATA_nowat.nc
+
+rms first :326,327,328
+
+cluster hieragglo epsilon 1.2 \
+    rms :326,327,328 \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,     
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,      
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-326",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+```bash
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "========================================="
+echo "Starting MMGBSA calculations"
+echo "========================================="
+
+#########################################
+# UNI
+#########################################
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "UNI completed."
+
+#########################################
+# UNL
+#########################################
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "UNL completed."
+
+#########################################
+# UNP
+#########################################
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "UNP completed."
+
+echo "========================================="
+echo "All MMGBSA calculations finished."
+echo "========================================="
+```
+```
+
+#### Associated compact outputs
+
+- `lys_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### A0A1B728H4
+
+Source folder: `A0A1B728H4-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  imin   = 0,
+  irest  = 1, ntx = 5,
+
+  ntb    = 2,           ! periodic box
+  ntp    = 1,           ! isotropic NPT
+  pres0  = 1.0,
+  taup   = 1.0,
+  barostat = 2,         ! Monte Carlo barostat (proper NPT)
+
+  temp0  = 300.0,
+  ntt    = 3,           ! Langevin thermostat
+  gamma_ln = 2.0,
+
+  ntc    = 2, ntf = 2,  ! SHAKE on bonds to H
+  cut    = 8.0,
+
+  dt     = 0.002,
+  nstlim = 250000000,    ! 50 ns; run 10 segments to reach 500 ns
+  ! if you insist on single 500 ns, use 250000000 here instead
+
+  ntpr   = 5000,        ! print every 10 ps
+  ntwx   = 5000,        ! write coords every 10 ps
+  ntwr   = 5000,        ! write restart every 10 ps
+
+  ioutfm = 1,           ! NetCDF trajectory
+  iwrap  = 1,
+  igb    = 0,
+
+  ig     = -1,          ! random seed for Langevin
+/
+```
+
+#### Trajectory preparation
+
+**make_HOMO1_nowat.in**
+
+```text
+parm solv_complexN.prmtop
+trajin md1.nc
+
+autoimage
+strip :WAT,Na+,Cl-
+
+trajout HOMO1_nowat.nc netcdf
+
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_HOMO1.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin HOMO1_nowat.nc
+
+distance lys_plp :147@NZ :282@C4 out lys_plp.dat
+
+distance plp_unl :282@C4 :281@C4 out plp_unl.dat
+
+distance plp_uni :282@C4 :280@N out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_HOMO1.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin HOMO1_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,     
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,      
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-280",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `lys_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### A0A1Z5HPJ6
+
+Source folder: `A0A1Z5HPJ6-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  imin   = 0,
+  irest  = 1, ntx = 5,
+
+  ntb    = 2,           ! periodic box
+  ntp    = 1,           ! isotropic NPT
+  pres0  = 1.0,
+  taup   = 1.0,
+  barostat = 2,         ! Monte Carlo barostat (proper NPT)
+
+  temp0  = 300.0,
+  ntt    = 3,           ! Langevin thermostat
+  gamma_ln = 2.0,
+
+  ntc    = 2, ntf = 2,  ! SHAKE on bonds to H
+  cut    = 8.0,
+
+  dt     = 0.002,
+  nstlim = 250000000,    ! 50 ns; run 10 segments to reach 500 ns
+  ! if you insist on single 500 ns, use 250000000 here instead
+
+  ntpr   = 5000,        ! print every 10 ps
+  ntwx   = 5000,        ! write coords every 10 ps
+  ntwr   = 5000,        ! write restart every 10 ps
+
+  ioutfm = 1,           ! NetCDF trajectory
+  iwrap  = 1,
+  igb    = 0,
+
+  ig     = -1,          ! random seed for Langevin
+/
+```
+
+#### Trajectory preparation
+
+**make_HOMO2_nowat.in**
+
+```text
+parm solv_complexN.prmtop
+trajin md1.nc
+
+autoimage
+strip :WAT,Na+,Cl-
+
+trajout HOMO2_nowat.nc netcdf
+
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_HOMO2.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin HOMO2_nowat.nc
+
+distance lys_plp :140@NZ :278@C11 out lys_plp.dat
+
+distance plp_unl :278@C11 :277@C4 out plp_unl.dat
+
+distance plp_uni :278@C11 :276@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_HOMO2.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin HOMO2_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,     
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,      
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-276",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `lys_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### S-omega-TA
+
+Source folder: `S-omega-TA-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_Somega_nowat.in**
+
+```text
+parm solv_complexN.prmtop
+trajin md1.nc
+
+autoimage
+strip :WAT,Na+,Cl-
+
+trajout Somega_nowat.nc netcdf
+
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin Somega_nowat.nc
+
+distance lys_plp :288@NZ :462@P out lys_plp.dat
+distance plp_unl :462@P  :461@C out plp_unl.dat
+distance plp_uni :462@P  :460@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_Somega.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin Somega_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2     rms :UNP,UNL     sieve 10 random     out dmcs_clusters.dat     summary dmcs_cluster_summary.dat     repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### Active-site or residue-wise RMSF definitions
+
+**active_site_rmsf.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin Somega_nowat.nc
+
+rms first :1-459@CA,C,N
+
+atomicfluct out active_site_rmsf.dat :288,460,461,462@CA byres
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,     
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,      
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-460",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+export PYTHONNOUSERSITE=1
+
+echo "===== UNI ====="
+python $AMBERHOME/bin/MMPBSA.py -O -i mmpbsa.in -cp solv_complex_uni.prmtop -rp solv_receptor.prmtop -lp solv_uni.prmtop -y complex_UNI_nowat.nc -o FINAL_RESULTS_UNI_MMPBSA.dat -do FINAL_DECOMP_UNI_MMPBSA.dat > mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+python $AMBERHOME/bin/MMPBSA.py -O -i mmpbsa.in -cp solv_complex_unl.prmtop -rp solv_receptor.prmtop -lp solv_unl.prmtop -y complex_UNL_nowat.nc -o FINAL_RESULTS_UNL_MMPBSA.dat -do FINAL_DECOMP_UNL_MMPBSA.dat > mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+python $AMBERHOME/bin/MMPBSA.py -O -i mmpbsa.in -cp solv_complex_unp.prmtop -rp solv_receptor.prmtop -lp solv_unp.prmtop -y complex_UNP_nowat.nc -o FINAL_RESULTS_UNP_MMPBSA.dat -do FINAL_DECOMP_UNP_MMPBSA.dat > mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `lys_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `active_site_rmsf.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### S-188
+
+Source folder: `S-188-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_S188_nowat.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin solv_complexN_md1_no_water.crd
+trajout S188_nowat.nc netcdf
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_S188.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin S188_nowat.nc
+
+distance ser_plp :188@OG :333@C4 out ser_plp.dat
+distance plp_unl :333@C4 :332@C4 out plp_unl.dat
+distance plp_uni :333@C4 :331@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_v2.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin S188_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-331",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `ser_plp.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### CV-TAm
+
+Source folder: `CV-tam`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_CVTAM_nowat.in**
+
+```text
+parm solv_complexN.prmtop
+trajin md1.nc
+
+autoimage
+strip :WAT,Na+,Cl-
+
+trajout CVTAM_nowat.nc netcdf
+
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_CVTAM.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin CVTAM_nowat.nc
+
+distance lys_plp :288@NZ :462@C4 out lys_plp.dat
+
+distance plp_unl :462@C4 :461@C4 out plp_unl.dat
+
+distance plp_uni :462@C4 :460@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_CVTAM.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin CVTAM_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,     
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,      
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-460",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `lys_plp.dat`
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+### W-188
+
+Source folder: `W-188-500ns`
+
+#### Production MD
+
+**md1.in**
+
+```text
+# production: lipase, explicit solvent, fixed protonation
+&cntrl
+  ntt=3, gamma_ln=2.0,
+  ntc=2, ntf=2,
+  ntb=2, ntp=1, pres0=1.0, taup=1.0,
+  cut=8.0,
+  dt=0.002,
+  nstlim=250000000,
+  ig=-1,
+  ntpr=5000, ntwx=5000, ntwr=5000,
+  ioutfm=1,
+  iwrap=1,
+  igb=0,
+  irest=1, ntx=5,
+/
+```
+
+#### Trajectory preparation
+
+**make_W188_nowat.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin solv_complexN_md1_no_water.crd
+trajout W188_nowat.nc netcdf
+run
+```
+
+#### DMCS distance definitions
+
+**dmcs_distances_W188.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin W188_nowat.nc
+
+distance trp_plp :188@CB :333@C4 out trp_plp.dat
+distance plp_unl :333@C4 :332@C4 out plp_unl.dat
+distance plp_uni :333@C4 :331@N1 out plp_uni.dat
+
+run
+```
+
+#### DMCS clustering definitions
+
+**cluster_dmcs_v2.in**
+
+```text
+parm solv_complexN_md_no_water.prmtop
+trajin W188_nowat.nc
+
+rms first :UNP,UNL
+
+cluster hieragglo epsilon 1.2 \
+    rms :UNP,UNL \
+    sieve 10 random \
+    out dmcs_clusters.dat \
+    summary dmcs_cluster_summary.dat \
+    repout dmcs_cluster_rep.pdb
+
+run
+```
+
+#### MM/GBSA controls
+
+**mmpbsa.in**
+
+```text
+&general
+  startframe=1,
+  endframe=50000,
+  interval=200,
+  verbose=1,
+  keep_files=0,
+  entropy=0,
+  netcdf=1,
+  use_sander=0,
+/
+
+&gb
+  igb=5,
+  saltcon=0.150,
+/
+
+&pb
+  istrng=0.150,
+/
+
+&decomp
+  idecomp=2,
+  dec_verbose=1,
+  print_res="1-331",
+/
+```
+
+**run_mmpbsa_all.sh**
+
+```text
+#!/bin/bash
+
+export AMBERHOME=/workspace/amber24
+
+echo "===== UNI ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_uni.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_uni.prmtop \
+-y complex_UNI_nowat.nc \
+-o FINAL_RESULTS_UNI_MMPBSA.dat \
+-do FINAL_DECOMP_UNI_MMPBSA.dat \
+> mmpbsa_uni.log 2>&1
+
+echo "===== UNL ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unl.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unl.prmtop \
+-y complex_UNL_nowat.nc \
+-o FINAL_RESULTS_UNL_MMPBSA.dat \
+-do FINAL_DECOMP_UNL_MMPBSA.dat \
+> mmpbsa_unl.log 2>&1
+
+echo "===== UNP ====="
+
+python $AMBERHOME/bin/MMPBSA.py -O \
+-i mmpbsa.in \
+-cp solv_complex_unp.prmtop \
+-rp solv_receptor.prmtop \
+-lp solv_unp.prmtop \
+-y complex_UNP_nowat.nc \
+-o FINAL_RESULTS_UNP_MMPBSA.dat \
+-do FINAL_DECOMP_UNP_MMPBSA.dat \
+> mmpbsa_unp.log 2>&1
+
+echo "DONE"
+```
+
+#### Associated compact outputs
+
+- `plp_uni.dat`
+- `plp_unl.dat`
+- `trp_plp.dat`
+- `dmcs_cluster_summary.dat`
+- `dmcs_clusters.dat`
+- `rmsf_byres_clean.dat`
+- `rmsf_complex_all_byres.dat`
+- `rmsf_ligands_all_byatom.dat`
+- `rmsf_protein_calpha.dat`
+- `rmsf_uni_byatom.dat`
+- `rmsf_unl_byatom.dat`
+- `rmsf_unp_byatom.dat`
+- `FINAL_RESULTS_UNL_MMPBSA.dat`
+
+## Execution notes
+
+Run CPPTRAJ inputs with the matching topology and the matching trajectory named in the input file. Do not mix topology/trajectory pairs across systems. The MD and MM/GBSA input files are preserved as collected; executable locations and AMBER environment variables may need to be adapted to the user's cluster installation.
+
+Large production NetCDF trajectories are not included. This public archive preserves compact numeric descriptor data and input configuration required to inspect the analysis.
