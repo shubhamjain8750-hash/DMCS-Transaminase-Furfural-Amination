@@ -13,6 +13,7 @@ Dcat is composed of catalytic-residue–PLP distance (0.50), PLP–furfural dist
 - `S1_INPUTS.csv`: system folders, catalytic residues and distance-output names.
 - `S1_descriptor_extraction.py`: descriptor extraction, common RMSF pocket definition, validation and sensitivity analysis.
 - `DMCS_RMSF_METHOD.md`: detailed scientific definition of the RMSF metric.
+- `DMCS_REPRODUCTION_GUIDE.md`: direct score/ranking reproduction from public processed data and full S1 re-extraction instructions.
 - `DMCS_DATA_PROVENANCE_AUDIT.md`: file inventory and QC summary.
 - `DMCS_15_SYSTEMS_INPUTS_AND_PROTOCOLS.md`: per-system input definitions.
 - `DMCS_15_SYSTEM_RAW_DESCRIPTORS.csv`: unnormalized mean distances, cluster and energy descriptors.
