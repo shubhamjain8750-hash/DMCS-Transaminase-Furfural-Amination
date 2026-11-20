@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""S2: Normalize the 15-system descriptor matrix and calculate DMCS."""
+"""S2: Normalize the locked 15-system descriptor matrix and calculate DMCS."""
 
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 INPUT_FILE = HERE / "DMCS_RESULTS.csv"
 OUTPUT_FILE = HERE / "DMCS_STANDARDIZED.csv"
 
-EXCLUDED_SYSTEMS = {"A0A1V0DD42", "A0A2L2XFE1"}
 EXPECTED_ENZYMES = {
     "ATA117-Rd11", "A0A2G0CFH8", "Lys-W-TA", "AspC", "AptA",
     "H-188", "G-188", "F-188", "AB-R-ATA", "A0A1B728H4",
@@ -23,15 +22,17 @@ REQUIRED_COLUMNS = [
 
 
 def minmax(series, column_name):
-    """Scale the series to [0, 1], with larger values scoring higher."""
+    """Scale values to [0, 1], with larger values scoring higher."""
     minimum, maximum = series.min(), series.max()
     if maximum == minimum:
-        raise ValueError(f"{column_name} has identical values; min-max normalization is undefined.")
+        raise ValueError(
+            f"{column_name} has identical values; min-max normalization is undefined."
+        )
     return (series - minimum) / (maximum - minimum)
 
 
 def inverse_minmax(series, column_name):
-    """Scale the series to [0, 1], with smaller values scoring higher."""
+    """Scale values to [0, 1], with smaller values scoring higher."""
     return 1.0 - minmax(series, column_name)
 
 
@@ -44,16 +45,16 @@ def main():
         raise ValueError("Input is empty or contains missing enzyme identifiers.")
 
     df["Enzyme"] = df["Enzyme"].astype(str).str.strip()
-    df = df.loc[~df["Enzyme"].isin(EXCLUDED_SYSTEMS)].copy()
-
     if df["Enzyme"].duplicated().any():
         duplicates = df.loc[df["Enzyme"].duplicated(), "Enzyme"].tolist()
         raise ValueError(f"Duplicate enzyme identifiers: {duplicates}")
-    if len(df) != EXPECTED_SYSTEM_COUNT or set(df["Enzyme"]) != EXPECTED_ENZYMES:
+
+    observed = set(df["Enzyme"])
+    if len(df) != EXPECTED_SYSTEM_COUNT or observed != EXPECTED_ENZYMES:
         raise ValueError(
-            "Input must contain the locked 15-system panel after exclusions. "
-            f"Missing={sorted(EXPECTED_ENZYMES - set(df['Enzyme']))}; "
-            f"unexpected={sorted(set(df['Enzyme']) - EXPECTED_ENZYMES)}"
+            "Input must match the defined 15-system analysis panel. "
+            f"Missing={sorted(EXPECTED_ENZYMES - observed)}; "
+            f"unexpected={sorted(observed - EXPECTED_ENZYMES)}"
         )
 
     numeric_columns = REQUIRED_COLUMNS[1:]
@@ -79,11 +80,11 @@ def main():
     # Rigidity: lower mean active-site RMSF receives a higher score.
     df["Drig"] = inverse_minmax(df["RMSF"], "RMSF")
 
-    # Conformational persistence: transform largest-cluster fraction by ln.
+    # Conformational persistence: logarithm of the largest-cluster fraction.
     df["Cluster_log"] = np.log(df["ClusterFraction"])
     df["Dconf"] = minmax(df["Cluster_log"], "Cluster_log")
 
-    # Energetic stabilization: use the magnitude of signed GB delta G.
+    # Energetic stabilization: magnitude of the signed GB binding free energy.
     df["MMGBSA_abs"] = df["MMGBSA"].abs()
     df["Dene"] = minmax(df["MMGBSA_abs"], "MMGBSA_abs")
 
@@ -101,10 +102,9 @@ def main():
         "RMSF", "ClusterFraction", "MMGBSA",
         "Dcat", "Drig", "Dconf", "Dene", "DMCS"
     ]
-    df[output_columns].to_csv(OUTPUT_FILE, index=False, float_format="%.6f")
-    print("DMCS calculation completed.")
-    print(f"Systems included: {len(df)}")
-    print(f"Systems excluded: {', '.join(sorted(EXCLUDED_SYSTEMS))}")
+    df[output_columns].to_csv(OUTPUT_FILE, index=False, float_format="%.9f")
+    print("DMCS normalization completed.")
+    print(f"Systems processed: {len(df)}")
     print(df[["Rank", "Enzyme", "DMCS"]].to_string(index=False))
 
 
